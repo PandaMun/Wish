@@ -5,17 +5,13 @@
         <div>
           <div>
             <div class="my-6">
-              <h2 class="text-h2 text-center font-weight-bold">QnA</h2>
+              <h2 class="text-h2 text-center font-weight-bold mt-5">QnA</h2>
             </div>
 
             <v-dialog persistent v-model="write" max-width="600px">
               <template v-slot:activator="{ on, attrs }">
                 <v-row class="px-3" justify="end">
-                  <v-btn
-                    v-bind="attrs"
-                    v-on="on"
-                    class="px-3 green font-weight-bold white--text"
-                  >
+                  <v-btn v-bind="attrs" v-on="on" class="px-3 green font-weight-bold white--text">
                     문의하기
                   </v-btn>
                 </v-row>
@@ -49,20 +45,10 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn
-                    color="blue darken-1"
-                    class="font-weight-bold"
-                    text
-                    @click="registQna"
-                  >
+                  <v-btn color="blue darken-1" class="font-weight-bold" text @click="registQna">
                     등록
                   </v-btn>
-                  <v-btn
-                    color="blue darken-1"
-                    class="font-weight-bold"
-                    text
-                    @click="write = false"
-                  >
+                  <v-btn color="blue darken-1" class="font-weight-bold" text @click="write = false">
                     취소
                   </v-btn>
                 </v-card-actions>
@@ -77,11 +63,7 @@
                 :key="i"
                 v-if="selectPage * 5 - 1 >= i && (selectPage - 1) * 5 <= i"
               >
-                <v-hover
-                  v-slot:default="{ hover }"
-                  open-delay="50"
-                  close-delay="50"
-                >
+                <v-hover v-slot:default="{ hover }" open-delay="50" close-delay="50">
                   <div>
                     <v-card
                       flat
@@ -130,55 +112,28 @@
                             </template>
 
                             <v-card>
-                              <v-card-title
-                                class="text-h5 grey font-weight-bold lighten-2"
-                              >
+                              <v-card-title class="text-h5 grey font-weight-bold lighten-2">
                                 QnA
                               </v-card-title>
 
-                              <v-card-text
-                                class="
-                                  text-h5
-                                  pt-5
-                                  black--text
-                                  font-weight-bold
-                                "
-                              >
+                              <v-card-text class="text-h5 pt-5 black--text font-weight-bold">
                                 Q. {{ qna.title }}
                               </v-card-text>
-                              <v-card-text
-                                class="pt-0 black--text font-weight-bold"
-                              >
+                              <v-card-text class="pt-0 black--text font-weight-bold">
                                 {{ qna.content }}
                               </v-card-text>
-                              <div
-                                style="display: flex; justify-content: center"
-                              >
+                              <div style="display: flex; justify-content: center">
                                 <v-card style="width: 90%" v-if="comment != ''">
-                                  <v-card-text
-                                    class="
-                                      pt-5
-                                      pd-0
-                                      black--text
-                                      font-weight-bold
-                                    "
-                                  >
+                                  <v-card-text class="pt-5 pd-0 black--text font-weight-bold">
                                     <v-icon>mdi-account</v-icon> ssafy
                                   </v-card-text>
                                   <hr
                                     width="95%"
                                     color="lightgrey"
-                                    style="
-                                      margin-left: auto;
-                                      margin-right: auto;
-                                    "
+                                    style="margin-left: auto; margin-right: auto"
                                   />
                                   <v-card-text class="black--text">
-                                    <v-text-field
-                                      solo
-                                      flat
-                                      v-model="comment"
-                                    ></v-text-field>
+                                    <v-text-field solo flat v-model="comment"></v-text-field>
                                   </v-card-text>
                                 </v-card>
                               </div>
@@ -237,10 +192,7 @@
                                 <v-container>
                                   <v-row>
                                     <v-col cols="12">
-                                      <v-textarea
-                                        v-model="mTitle"
-                                        required
-                                      ></v-textarea>
+                                      <v-textarea v-model="mTitle" required></v-textarea>
                                     </v-col>
                                   </v-row>
                                 </v-container>
@@ -249,10 +201,7 @@
                                 <v-container>
                                   <v-row>
                                     <v-col cols="12">
-                                      <v-textarea
-                                        v-model="mContent"
-                                        required
-                                      ></v-textarea>
+                                      <v-textarea v-model="mContent" required></v-textarea>
                                     </v-col>
                                   </v-row>
                                 </v-container>
@@ -286,18 +235,13 @@
                           >
                             <v-card>
                               <v-card-title>
-                                <span class="text-h5 font-weight-bold"
-                                  >답변 등록</span
-                                >
+                                <span class="text-h5 font-weight-bold">답변 등록</span>
                               </v-card-title>
                               <v-card-text class="pb-0">
                                 <v-container>
                                   <v-row>
                                     <v-col cols="12">
-                                      <v-textarea
-                                        v-model="rComment"
-                                        required
-                                      ></v-textarea>
+                                      <v-textarea v-model="rComment" required></v-textarea>
                                     </v-col>
                                   </v-row>
                                 </v-container>
@@ -431,9 +375,9 @@ export default {
           this.page = Math.floor((this.qnaList.length - 1) / 5 + 1);
         }
         console.log(this.page);
-        this.dialog = Array.from({length: this.qnaList.length}, () => false);
-        this.dialog2 = Array.from({length: this.qnaList.length}, () => false);
-        this.dialog3 = Array.from({length: this.qnaList.length}, () => false);
+        this.dialog = Array.from({ length: this.qnaList.length }, () => false);
+        this.dialog2 = Array.from({ length: this.qnaList.length }, () => false);
+        this.dialog3 = Array.from({ length: this.qnaList.length }, () => false);
       });
     },
     findComment(i) {
