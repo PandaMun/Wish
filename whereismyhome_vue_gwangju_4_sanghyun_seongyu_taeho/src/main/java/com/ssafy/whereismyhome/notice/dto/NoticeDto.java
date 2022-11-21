@@ -25,7 +25,7 @@ public class NoticeDto {
         this.id = notice.getId();
         this.title = notice.getTitle();
         this.content = notice.getContent();
-        this.userId = notice.getUser().getUserId();
+        this.userId = notice.getUser().getId();
         this.createDate = notice.getCreateDate();
         this.updateDate = notice.getUpdateDate();
     }
