@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div>
     <div>
       <v-card>
@@ -17,14 +17,17 @@
                   class="search-txt"
                   id="autoComplete"
                   v-model="text"
-                  @keyup="searchList"
+                  @input="searchList($event)"
                   type="text"
+                  ref="getValue"
                   style="width: 400px; height: 40px; font-size: 25px"
                   placeholder="  검색어를 입력하세요."
                   onfocus="this.placeholder = ''"
                   onblur=" this.placeholder = '  검색어를 입력하세요.'"
                 />
-                <button class="search-btn" style="width: 40px; height: 40px">검색</button>
+                <button class="search-btn" style="width: 40px; height: 40px" @click="moveToMap()">
+                  검색
+                </button>
                 <container class="rel_search">
                   <ul class="search_list"></ul>
                 </container>
@@ -39,58 +42,104 @@
 
 <script>
 import http from "@/util/http-common";
-var locList = [
-  "영등포본동",
-  "영등포동",
-  "여의동",
-  "당산1동",
-  "당산2동",
-  "도림동",
-  "문래동",
-  "양평1동",
-  "양평2동",
-  "신길1동",
-  "신길2동",
-  "신길3동",
-  "신길4동",
-  "신길5동",
-  "신길6동",
-  "신길7동",
-  "대림1동",
-  "대림2동",
-];
+
+// var findList = [];
+$(function () {
+  $("#autoComplete").autocomplete({
+    source: function (request, response) {
+      $.ajax({
+        type: "get",
+        contentType: "application/x-www-form-urlencoded; charset=euc-kr",
+        url: "http://192.168.27.58:80/wish/dongs/" + Home.text,
+        dataType: "json",
+        success: function (data) {
+          // 서버에서 json 데이터 response 후 목록 추가
+          response(
+            console.log(data),
+            $.map(data, function (item) {
+              return {
+                label: item + "label",
+                value: item,
+                test: item + "test",
+              };
+            })
+          );
+        },
+      });
+    },
+    select: function (event, ui) {
+      console.log(ui);
+      console.log(ui.item.label);
+      console.log(ui.item.value);
+      console.log(ui.item.test);
+    },
+    focus: function (event, ui) {
+      return false;
+    },
+    minLength: 1,
+    autoFocus: true,
+    classes: {
+      "ui-autocomplete": "highlight",
+    },
+    delay: 500,
+    position: { my: "right top", at: "right bottom" },
+    close: function (event) {
+      console.log(event);
+    },
+  });
+});
+
 export default {
   name: "Home",
   data() {
     return {
       text: "",
+      searchItem: "",
       findList: [],
     };
   },
   methods: {
-    searchList() {
-      http.get(`/wish/apartments/${this.text}`).then(({ data }) => console.log(data));
-      http.get(`/wish/apartments/${this.text}`).then(({ data }) => console.log(data));
+    searchList(event) {
+      // debugger;
+      console.log("search");
+      this.text = event.target.value;
+      console.log("event value : " + event.target.value);
+      if (this.text.length < 2) {
+        return;
+      }
+      http.get(`/wish/dongs/${this.text}`).then(({ data }) => {
+        let tmp = [];
+        data.map((row) => {
+          tmp.push(row.sidoName + " " + row.gugunName + " " + row.dongName);
+        });
+        this.findList = tmp;
+        console.log(this.findList);
+        if (this.findList.length > 0) {
+          $("#autoComplete").autocomplete({
+            //오토 컴플릿트 시작
+            source: this.findList,
+            focus: function (event, ui) {
+              // 방향키로 자동완성단어 선택 가능하게 만들어줌
+              return false;
+            },
+            minLength: 2, // 최소 글자수
+            delay: 500, //autocomplete 딜레이 시간(ms)
+            //disabled: true, //자동완성 기능 끄기
+          });
+        }
+        this.text = event.target.value;
+        console.log(this.text);
+      });
+    },
+    moveToMap() {
+      this.value = this.$router.push({ path: "/map", params: this.$refs.getValue.value });
+      console.log("here :" + this.$refs.getValue.value);
     },
   },
   components: {
     siderbar: () => import("@/components/details/sidebar"),
   },
 };
-
-$(document).ready(function () {
-  // input필드에 자동완성 기능을 걸어준다
-  $("#autoComplete").autocomplete({
-    source: findList,
-    focus: function (event, ui) {
-      return false;
-    },
-    select: function (event, ui) {},
-    minLength: 1,
-    delay: 100,
-    autoFocus: true,
-  });
-});
 </script>
 
 <style scoped>
@@ -108,8 +157,8 @@ h2 {
   border-radius: 40px;
 }
 .search-btn {
-  background-color: blue;
+  background-color: grey;
   position: absolute;
   border-radius: 40px;
 }
-</style> -->
+</style>
