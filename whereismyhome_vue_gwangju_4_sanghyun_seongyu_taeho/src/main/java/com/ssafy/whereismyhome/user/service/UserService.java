@@ -10,6 +10,7 @@ import com.ssafy.whereismyhome.user.dto.UserInfo;
 import com.ssafy.whereismyhome.user.entity.User;
 import com.ssafy.whereismyhome.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,8 +20,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 
+
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class UserService {
 
     private final UserRepository memberRepository;
@@ -64,7 +67,7 @@ public class UserService {
     // 2
     public UserInfo getMemberInfo(String userId) {
         User user = memberRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("회원이 없습니다."));
-        if (!user.getUserId().equals(getCurrentUsername())) {
+        if (userId.equals(refreshTokenRedisRepository.findById(userId))) {
             throw new IllegalArgumentException("회원 정보가 일치하지 않습니다.");
         }
         return UserInfo.builder()
@@ -102,10 +105,12 @@ public class UserService {
     }
 
     private String getCurrentUsername() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails principal = (UserDetails) authentication.getPrincipal();
-        return principal.getUsername();
+        System.out.println(SecurityContextHolder.getContext());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = (UserDetails) principal;
+        return userDetails.getUsername();
     }
 
     private TokenDto reissueRefreshToken(String refreshToken, String userId) {
@@ -118,6 +123,10 @@ public class UserService {
 
     private boolean lessThanReissueExpirationTimesLeft(String refreshToken) {
         return jwtTokenUtil.getRemainMilliSeconds(refreshToken) < JwtExpirationEnums.REISSUE_EXPIRATION_TIME.getValue();
+    }
+
+    private String getUserIdByRefreshToken(String userId){
+        return refreshTokenRedisRepository.findById(userId).get().getId();
     }
 }
 

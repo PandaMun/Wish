@@ -2,10 +2,7 @@ package com.ssafy.whereismyhome.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.whereismyhome.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,20 +13,20 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CustomUserDetails implements UserDetails {
 
-    private String userId;
+    private String username;
     private String password;
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
     public static UserDetails of(User user) {
         return CustomUserDetails.builder()
-                .userId(user.getUserId())
+                .username(user.getUserId())
                 .password(user.getUserPassword())
                 .roles(user.getRoles())
                 .build();
@@ -50,7 +47,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userId;
+        return username;
     }
 
     @Override
