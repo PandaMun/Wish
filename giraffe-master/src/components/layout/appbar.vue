@@ -49,7 +49,7 @@
               style="cursor: pointer"
               @click="$router.push('/')"
             >
-              <v-icon color="green" large>mdi-feather</v-icon>
+              <v-icon large color="green" large>mdi-home-outline</v-icon>
               구해줘
               <span class="green--text">홈즈</span>
             </v-toolbar-title>

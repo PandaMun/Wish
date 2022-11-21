@@ -5,7 +5,7 @@
         class="flex-column"
         align="center"
         justify="center"
-        style="margin-top: 20vh; margin-bottom: 30vh"
+        style="margin-top: 20vh; margin-bottom: 20vh"
       >
         <v-col
           cols="12"
@@ -36,16 +36,7 @@
               onblur=" this.placeholder = '  검색어를 입력하세요.'"
             />
 
-            <v-btn
-              class="ma-2"
-              :loading="loading2"
-              :disabled="loading2"
-              color="success"
-              @click="moveToMap()"
-              style="margin-left: 0px"
-            >
-              검색
-            </v-btn>
+            <button class="button" @click="moveToMap()">검색</button>
             <container class="rel_search">
               <ul class="search_list"></ul>
             </container>
@@ -171,5 +162,16 @@ h2 {
   /* left: 50%; */
   transform: translate(-50%, -50%);
   border-radius: 40px;
+}
+.button {
+  background-color: #555555; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  height: 60px;
 }
 </style>

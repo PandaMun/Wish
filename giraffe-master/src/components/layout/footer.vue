@@ -9,7 +9,7 @@
         </v-btn>
       </v-card-text>
 
-      <v-card-text class="black--text pt-0"> 무언가 적을 곳</v-card-text>
+      <v-card-text class="black--text pt-0">김상현, 김선규, 문태호</v-card-text>
 
       <v-divider></v-divider>
 

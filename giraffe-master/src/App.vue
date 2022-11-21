@@ -23,8 +23,8 @@ export default {
 </script>
 <style>
 #app {
-  background-image: url("../images/background.jpg");
-  background-size: cover;
+  /* background-image: url("../images/background.jpg"); */
+  /* background-size: cover; */
   /* filter: blur(8px); */
   /* -webkit-filter: blur(8px); */
 }
