@@ -39,18 +39,18 @@
     <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="white" elevate-on-scroll flat>
       <v-container :class="{ 'px-0': !$vuetify.breakpoint.smAndUp }">
         <v-row :no-gutters="!$vuetify.breakpoint.smAndUp" align="center" justify="space-between">
-          <v-col class="d-flex align-center">
+          <v-col class="d-flex ">
             <v-app-bar-nav-icon
               v-if="!$vuetify.breakpoint.mdAndUp"
               @click.stop="drawer = !drawer"
             />
             <v-toolbar-title
-              class="font-weight-bold text-h5 primary--text"
+              class="font-weight-bold text-h5 primary--text d-flex justfiy-content-center align-items-center"
               style="cursor: pointer"
               @click="$router.push('/')"
             >
-              <v-icon large color="green" large>mdi-home-outline</v-icon>
-              구해줘
+              <v-icon color="green" size="25">mdi-home-outline</v-icon>
+              <span>구해줘</span>
               <span class="green--text">홈즈</span>
             </v-toolbar-title>
           </v-col>
@@ -96,7 +96,7 @@ export default {
     btnItems: [
       {
         text: "MyPage",
-        to: "/login",
+        to: "/mypage",
         target: "_black",
         color: "danger",
         icon: "mdi-login",
