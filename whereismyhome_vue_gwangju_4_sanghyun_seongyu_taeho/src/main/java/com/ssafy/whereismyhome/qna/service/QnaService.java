@@ -39,7 +39,7 @@ public class QnaService{
 
         return inquiryRepository.save(Inquiry.builder()
                 .title(param.getTitle())
-                .user(User.builder().userId(param.getUserId()).build())
+                .user(User.builder().Id(param.getUserId()).build())
                 .content(param.getContent())
                 .answer(false)
                 .build());
@@ -79,7 +79,7 @@ public class QnaService{
         return commentRepository.save(Comment.builder()
                 .id(commentDto.getId())
                 .inquiry(Inquiry.builder().id(commentDto.getId()).build())
-                .user(User.builder().userId(commentDto.getUserId()).build())
+                .user(User.builder().Id(commentDto.getUserId()).build())
                 .content(commentDto.getContent())
                 .build());
     }

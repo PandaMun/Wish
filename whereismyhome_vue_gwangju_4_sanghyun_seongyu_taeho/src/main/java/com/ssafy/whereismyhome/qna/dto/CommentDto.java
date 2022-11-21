@@ -16,7 +16,7 @@ public class CommentDto {
     public CommentDto(Comment comment){
         this.content = comment.getContent();
         this.Id = comment.getInquiry().getId();
-        this.userId = comment.getUser().getUserId();
+        this.userId = comment.getUser().getId();
     }
 
 }

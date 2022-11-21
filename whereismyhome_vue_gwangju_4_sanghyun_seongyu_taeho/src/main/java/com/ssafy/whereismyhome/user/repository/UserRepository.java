@@ -7,9 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface UserRepository extends JpaRepository<User, String> {
-
-    @Query("select m from User m join fetch m.authorities a where m.userId = :userId")
-    Optional<User> findByUserIdWithAuthority(String userId);
+    Optional<User> findById(String userId);
+    boolean existsById(String userId);
 }

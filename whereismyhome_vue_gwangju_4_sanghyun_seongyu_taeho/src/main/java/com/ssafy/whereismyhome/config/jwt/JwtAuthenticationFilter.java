@@ -1,80 +1,56 @@
 package com.ssafy.whereismyhome.config.jwt;
 
-import com.ssafy.whereismyhome.config.CustomUserDetailService;
-import com.ssafy.whereismyhome.config.redis.LogoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends GenericFilterBean {
 
-    private final JwtTokenUtil jwtTokenUtil;
-    private final CustomUserDetailService customUserDetailService;
-    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_TYPE = "Bearer";
 
+    private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getToken(request);
-        System.out.println("AccessToken : " + accessToken);
-        if (accessToken != null) {
-            checkLogout(accessToken);
-            String username = jwtTokenUtil.getUsername(accessToken);
-            System.out.println(username);
-            if (username != null) {
-                UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
-                validateAccessToken(accessToken, userDetails);
-                processSecurity(request, userDetails);
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+        // 1. Request Header 에서 JWT 토큰 추출
+        String token = resolveToken((HttpServletRequest) request);
+
+        // 2. validateToken 으로 토큰 유효성 검사
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            // (추가) Redis 에 해당 accessToken logout 여부 확인
+            String isLogout = (String)redisTemplate.opsForValue().get(token);
+            if (ObjectUtils.isEmpty(isLogout)) {
+                // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 
-    private String getToken(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
+    // Request Header 에서 토큰 정보 추출
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
+            return bearerToken.substring(7);
         }
         return null;
-    }
-
-    private void checkLogout(String accessToken) {
-        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
-            throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
-        }
-    }
-
-    private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {
-        if (!userDetailsUsername.equals(tokenUsername)) {
-            throw new IllegalArgumentException("username이 토큰과 맞지 않습니다.");
-        }
-    }
-
-    private void validateAccessToken(String accessToken, UserDetails userDetails) {
-        if (!jwtTokenUtil.validateToken(accessToken, userDetails)) {
-            throw new IllegalArgumentException("토큰 검증 실패");
-        }
-    }
-
-    private void processSecurity(HttpServletRequest request, UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
-        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }
 }
