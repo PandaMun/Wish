@@ -1,41 +1,57 @@
 <template>
   <div>
     <div>
-      <v-card>
-        <v-img
-          :aspect-ratio="16 / 9"
-          dark
-          gradient="to top, rgba(25,32,72,.7), rgba(25,32,72,.0)"
-          height="600px"
-          src="../images/main.png"
+      <v-row
+        class="flex-column"
+        align="center"
+        justify="center"
+        style="margin-top: 20vh; margin-bottom: 30vh"
+      >
+        <v-col
+          cols="12"
+          style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px"
         >
-          <v-row class="flex-column">
-            <v-col cols="12">
-              <h2 class="text-h1">HAPPY HOUSE</h2>
-              <div class="search-home">
-                <input
-                  class="search-txt"
-                  id="autoComplete"
-                  v-model="text"
-                  @input="searchList($event)"
-                  type="text"
-                  ref="getValue"
-                  style="width: 400px; height: 40px; font-size: 25px"
-                  placeholder="  검색어를 입력하세요."
-                  onfocus="this.placeholder = ''"
-                  onblur=" this.placeholder = '  검색어를 입력하세요.'"
-                />
-                <button class="search-btn" style="width: 40px; height: 40px" @click="moveToMap()">
-                  검색
-                </button>
-                <container class="rel_search">
-                  <ul class="search_list"></ul>
-                </container>
-              </div>
-            </v-col>
+          <v-row justify="center" class="mt-500">
+            <h1 style="font-size: 50px; padding-bottom: 20px">어떤 집을 찾고 계세요?</h1>
+            <!-- <v-img src="../images/happyhouse-removebg-preview.png" max-width="300"> </v-img> -->
           </v-row>
-        </v-img>
-      </v-card>
+          <v-row justify="center" align="center" style="margin-left: 20px">
+            <v-icon large>mdi-magnify</v-icon>
+            <input
+              class="search-txt"
+              id="autoComplete"
+              v-model="text"
+              @input="searchList($event)"
+              type="text"
+              ref="getValue"
+              style="
+                width: 600px;
+                height: 60px;
+                font-size: 20px;
+
+                border: 2px solid grey;
+              "
+              placeholder="  검색어를 입력하세요."
+              onfocus="this.placeholder = ''"
+              onblur=" this.placeholder = '  검색어를 입력하세요.'"
+            />
+
+            <v-btn
+              class="ma-2"
+              :loading="loading2"
+              :disabled="loading2"
+              color="success"
+              @click="moveToMap()"
+              style="margin-left: 0px"
+            >
+              검색
+            </v-btn>
+            <container class="rel_search">
+              <ul class="search_list"></ul>
+            </container>
+          </v-row>
+        </v-col>
+      </v-row>
     </div>
   </div>
 </template>
@@ -142,23 +158,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 h2 {
   text-align: center;
   font-weight: bold;
   margin-top: 200px;
 }
 .search-home {
-  position: absolute;
+  /* position: absolute; */
   background-color: white;
-  top: 60%;
-  left: 50%;
+  /* top: 55%; */
+  /* left: 50%; */
   transform: translate(-50%, -50%);
-  border-radius: 40px;
-}
-.search-btn {
-  background-color: grey;
-  position: absolute;
   border-radius: 40px;
 }
 </style>
