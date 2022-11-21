@@ -1,12 +1,14 @@
 package com.ssafy.whereismyhome.config.jwt;
 
 import com.ssafy.whereismyhome.config.CustomUserDetailService;
+import com.ssafy.whereismyhome.config.redis.LogoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,18 +26,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final CustomUserDetailService customUserDetailService;
-//    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
+    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getToken(request);
+        System.out.println("AccessToken : " + accessToken);
         if (accessToken != null) {
             checkLogout(accessToken);
             String username = jwtTokenUtil.getUsername(accessToken);
+            System.out.println(username);
             if (username != null) {
                 UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
-                equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), username);
                 validateAccessToken(accessToken, userDetails);
                 processSecurity(request, userDetails);
             }
@@ -52,9 +55,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void checkLogout(String accessToken) {
-//        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
-//            throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
-//        }
+        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
+            throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
+        }
     }
 
     private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {

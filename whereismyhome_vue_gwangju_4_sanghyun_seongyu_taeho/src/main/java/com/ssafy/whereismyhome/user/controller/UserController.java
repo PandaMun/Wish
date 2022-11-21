@@ -20,9 +20,9 @@ public class UserController {
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/sign-up")
-    public String join(@RequestBody JoinDto joinDto) {
+    public ResponseEntity<String> join(@RequestBody JoinDto joinDto) {
         userService.join(joinDto);
-        return "회원가입 완료";
+        return ResponseEntity.ok("ok");
     }
 
     @PostMapping("/admin/sign-up")
@@ -36,9 +36,11 @@ public class UserController {
         return ResponseEntity.ok(userService.login(loginDto));
     }
 
-    @GetMapping("/members/{email}")
-    public UserInfo getMemberInfo(@PathVariable String email) {
-        return userService.getMemberInfo(email);
+    @GetMapping("/members/{userId}")
+    public UserInfo getMemberInfo(@PathVariable String userId) {
+        UserInfo userInfo = userService.getMemberInfo(userId);
+        System.out.println(userInfo.toString());
+        return userInfo;
     }
 
     @PostMapping("/reissue")
