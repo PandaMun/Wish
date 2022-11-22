@@ -39,7 +39,7 @@
     <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app color="white" elevate-on-scroll flat>
       <v-container :class="{ 'px-0': !$vuetify.breakpoint.smAndUp }">
         <v-row :no-gutters="!$vuetify.breakpoint.smAndUp" align="center" justify="space-between">
-          <v-col class="d-flex ">
+          <v-col class="d-flex">
             <v-app-bar-nav-icon
               v-if="!$vuetify.breakpoint.mdAndUp"
               @click.stop="drawer = !drawer"
@@ -132,6 +132,10 @@ export default {
       {
         title: "QnA",
         to: "/qna",
+      },
+      {
+        title: "Favorite",
+        to: "/favorite",
       },
     ],
   }),
