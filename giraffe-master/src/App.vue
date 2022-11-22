@@ -6,7 +6,7 @@
       <router-view></router-view>
     </v-container>
 
-    <Footer></Footer>
+    <!-- <Footer></Footer> -->
   </v-app>
 </template>
 
@@ -16,15 +16,15 @@ export default {
 
   components: {
     AppBar: () => import("@/components/layout/appbar.vue"),
-    Footer: () => import("@/components/layout/footer.vue"),
+    // Footer: () => import("@/components/layout/footer.vue"),
   },
   data: () => ({}),
 };
 </script>
 <style>
 #app {
-  background-image: url("../images/background.jpg");
-  background-size: cover;
+  /* background-image: url("../images/background.jpg"); */
+  /* background-size: cover; */
   /* filter: blur(8px); */
   /* -webkit-filter: blur(8px); */
 }

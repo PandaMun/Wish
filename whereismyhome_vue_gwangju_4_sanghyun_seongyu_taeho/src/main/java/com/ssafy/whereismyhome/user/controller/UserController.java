@@ -1,59 +1,43 @@
 package com.ssafy.whereismyhome.user.controller;
 
-import com.ssafy.whereismyhome.config.jwt.JwtTokenUtil;
-import com.ssafy.whereismyhome.user.dto.JoinDto;
-import com.ssafy.whereismyhome.user.dto.LoginDto;
-import com.ssafy.whereismyhome.user.dto.TokenDto;
-import com.ssafy.whereismyhome.user.dto.UserInfo;
+import com.ssafy.whereismyhome.config.jwt.JwtTokenProvider;
+import com.ssafy.whereismyhome.user.dto.UserRequestDto;
 import com.ssafy.whereismyhome.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/wish")
+@RequestMapping("/wish/")
 @RequiredArgsConstructor
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UserController {
 
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
-    private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/sign-up")
-    public String join(@RequestBody JoinDto joinDto) {
-        userService.join(joinDto);
-        return "회원가입 완료";
-    }
-
-    @PostMapping("/admin/sign-up")
-    public String joinAdmin(@RequestBody JoinDto joinDto) {
-        userService.joinAdmin(joinDto);
-        return "어드민 회원 가입 완료";
+    public ResponseEntity<?> signUp(@RequestBody UserRequestDto.SignUp signUp) {
+        // validation check
+        return userService.signUp(signUp);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(userService.login(loginDto));
-    }
-
-    @GetMapping("/members/{email}")
-    public UserInfo getMemberInfo(@PathVariable String email) {
-        return userService.getMemberInfo(email);
+    public ResponseEntity<?> login(@RequestBody UserRequestDto.Login login) {
+        // validation check
+        return userService.login(login);
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenDto> reissue(@RequestHeader("RefreshToken") String refreshToken) {
-        return ResponseEntity.ok(userService.reissue(refreshToken));
+    public ResponseEntity<?> reissue(@RequestBody UserRequestDto.Reissue reissue) {
+        // validation check
+        return userService.reissue(reissue);
     }
 
     @PostMapping("/logout")
-    public void logout(@RequestHeader("Authorization") String accessToken,
-                       @RequestHeader("RefreshToken") String refreshToken) {
-        String username = jwtTokenUtil.getUsername(resolveToken(accessToken));
-        userService.logout(TokenDto.of(accessToken, refreshToken), username);
-    }
+    public ResponseEntity<?> logout(@RequestBody UserRequestDto.Logout logout) {
+        // validation check
 
-    private String resolveToken(String accessToken) {
-        return accessToken.substring(7);
+        return userService.logout(logout);
     }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <v-row class="flex-column" align="center" justify="center" style="margin-top: 20vh; margin-bottom: 30vh">
+      <v-row class="flex-column" align="center" justify="center" style="margin-top: 20vh; margin-bottom: 20vh">
         <v-col cols="12" style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px">
           <v-row justify="center" class="mt-500">
             <h1 style="font-size: 50px; padding-bottom: 20px">어떤 집을 찾고 계세요?</h1>
@@ -28,16 +28,7 @@
               onblur=" this.placeholder = '  검색어를 입력하세요.'"
             />
 
-            <v-btn
-              class="ma-2"
-              :loading="loading2"
-              :disabled="loading2"
-              color="success"
-              @click="[write(), moveToMap()]"
-              style="margin-left: 0px"
-            >
-              검색
-            </v-btn>
+            <button class="button" @click="moveToMap()">검색</button>
             <container class="rel_search">
               <ul class="search_list"></ul>
             </container>
@@ -45,6 +36,7 @@
         </v-col>
       </v-row>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -159,6 +151,7 @@ export default {
   },
   components: {
     siderbar: () => import("@/components/details/sidebar"),
+    Footer: () => import("@/components/layout/footer.vue"),
   },
 };
 </script>
@@ -176,5 +169,16 @@ h2 {
   /* left: 50%; */
   transform: translate(-50%, -50%);
   border-radius: 40px;
+}
+.button {
+  background-color: #555555; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  height: 60px;
 }
 </style>

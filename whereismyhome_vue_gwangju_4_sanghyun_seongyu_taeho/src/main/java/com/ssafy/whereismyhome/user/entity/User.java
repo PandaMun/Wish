@@ -4,47 +4,53 @@ import com.ssafy.whereismyhome.interest.entity.Interest;
 import com.ssafy.whereismyhome.notice.entity.Notice;
 import com.ssafy.whereismyhome.qna.entity.Comment;
 import com.ssafy.whereismyhome.qna.entity.Inquiry;
-import com.ssafy.whereismyhome.user.dto.JoinDto;
-import com.sun.istack.NotNull;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import static java.util.stream.Collectors.toList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
-@Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class User {
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Entity
+public class User implements UserDetails {
 
     @Id
     @Column(unique = true)
-    private String userId;
+    private String Id;
+
+    @Column
+    private String password;
 
     @Column(unique = true)
-    private String userKey;
-
-
-    private String userPassword;
+    private String email;
 
     private String address;
 
     private String phoneNumber;
 
-    @Column(unique = true)
-    private String email;
-
     private String username;
 
     private String nickname;
 
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notice> notices;
@@ -58,48 +64,28 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Interest> interests;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<Authority> authorities = new HashSet<>();
-
-    public static User ofUser(JoinDto joinDto) {
-        User user = User.builder()
-                .userKey(UUID.randomUUID().toString())
-                .userId(joinDto.getUserId())
-                .email(joinDto.getEmail())
-                .userPassword(joinDto.getPassword())
-                .username(joinDto.getUsername())
-                .nickname(joinDto.getNickname())
-                .phoneNumber(joinDto.getPhoneNumber())
-                .address(joinDto.getAddress())
-                .build();
-        user.addAuthority(Authority.ofUser(user));
-        return user;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
-    public static User ofAdmin(JoinDto joinDto) {
-        User user = User.builder()
-                .userKey(UUID.randomUUID().toString())
-                .userId(joinDto.getUserId())
-                .email(joinDto.getEmail())
-                .userPassword(joinDto.getPassword())
-                .username(joinDto.getUsername())
-                .nickname(joinDto.getNickname())
-                .phoneNumber(joinDto.getPhoneNumber())
-                .address(joinDto.getAddress())
-                .build();
-        user.addAuthority(Authority.ofAdmin(user));
-        return user;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    private void addAuthority(Authority authority) {
-        authorities.add(authority);
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public List<String> getRoles() {
-        return authorities.stream()
-                .map(Authority::getRole)
-                .collect(toList());
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

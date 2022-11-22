@@ -1,6 +1,11 @@
 <template>
   <v-footer dark padless>
-    <v-card flat tile class="white lighten-1 black--text text-center" style="width: 100%">
+    <v-card
+      flat
+      tile
+      class="white lighten-1 black--text text-center"
+      style="width: 100%"
+    >
       <v-card-text>
         <v-btn v-for="icon in icons" :key="icon" class="mx-4 black--text" icon>
           <v-icon size="24px">
@@ -9,7 +14,7 @@
         </v-btn>
       </v-card-text>
 
-      <v-card-text class="black--text pt-0"> 무언가 적을 곳</v-card-text>
+      <v-card-text class="black--text pt-0">김상현, 김선규, 문태호</v-card-text>
 
       <v-divider></v-divider>
 

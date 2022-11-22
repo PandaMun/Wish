@@ -23,7 +23,7 @@ public class InquiryDto {
     public InquiryDto(Inquiry inquiry){
         this.id = inquiry.getId();
         this.title = inquiry.getTitle();
-        this.userId = inquiry.getUser().getUserId();
+        this.userId = inquiry.getUser().getId();
         this.content = inquiry.getContent();
         this.answer = inquiry.getAnswer();
         this.createDate = inquiry.getCreateDate();
