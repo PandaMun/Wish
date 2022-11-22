@@ -44,6 +44,7 @@
         </v-col>
       </v-row>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -145,6 +146,7 @@ export default {
   },
   components: {
     siderbar: () => import("@/components/details/sidebar"),
+    Footer: () => import("@/components/layout/footer.vue"),
   },
 };
 </script>

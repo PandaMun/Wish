@@ -303,6 +303,7 @@
         </div>
       </v-col>
     </v-row>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -449,6 +450,9 @@ export default {
   },
   created() {
     this.makeList();
+  },
+  components: {
+    Footer: () => import("@/components/layout/footer.vue"),
   },
 };
 </script>
