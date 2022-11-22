@@ -1410,9 +1410,9 @@ vuetify@^2.6.0:
   integrity sha512-Zfiz2DZnp1DvxqGaSCGqGjv4mPNAurJJ5Xwy7bzNzIySGLlRdlO8UH6aNWnSgfaAsLP3voxadSGDm6tKM8Ys7w==
 
 vuex@^2.6.2:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/vuex/-/vuex-2.5.0.tgz#20f0265ade6c9a5ac6724a405d3ffdb4726c9741"
-  integrity sha512-5oJPOJySBgSgSzoeO+gZB/BbN/XsapgIF6tz34UwJqnGZMQurzIO3B4KIBf862gfc9ya+oduY5sSkq+5/oOilQ==
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-2.0.0.tgz#26befa44de220f009e432d1027487bff29571cee"
+  integrity sha512-dAVUbZthEm5xFVDp2aYHpxfoILj2vHWRNRLlbeCNrwyrOwSQ/wIl3L0J1C4TcdUWHpQzU/VejqdvRcIJkLblVg==
 
 webpack-virtual-modules@^0.4.3:
   version "0.4.3"

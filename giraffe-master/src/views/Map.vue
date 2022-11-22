@@ -5,7 +5,14 @@
       <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
         <div>
           <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 10px;
+              "
+            >
               <h4 class="text-h5 font-weight-bold pt-4 pb-4">아파트 상세 정보</h4>
               <div>
                 <v-btn class="mx-2" fab small color="error">
@@ -57,6 +64,7 @@ export default {
     };
   },
   mounted() {
+    console.log("간 후  : " + this.$store.state.location);
     window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
   },
 
@@ -79,7 +87,8 @@ export default {
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src = "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
       document.head.appendChild(script);
     },
     initMap() {
@@ -132,7 +141,8 @@ export default {
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src = "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
       document.head.appendChild(script);
 
       this.makeDeals();

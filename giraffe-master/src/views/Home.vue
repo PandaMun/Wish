@@ -1,8 +1,16 @@
 <template>
   <div>
     <div>
-      <v-row class="flex-column" align="center" justify="center" style="margin-top: 20vh; margin-bottom: 20vh">
-        <v-col cols="12" style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px">
+      <v-row
+        class="flex-column"
+        align="center"
+        justify="center"
+        style="margin-top: 20vh; margin-bottom: 20vh"
+      >
+        <v-col
+          cols="12"
+          style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px"
+        >
           <v-row justify="center" class="mt-500">
             <h1 style="font-size: 50px; padding-bottom: 20px">어떤 집을 찾고 계세요?</h1>
             <!-- <v-img src="../images/happyhouse-removebg-preview.png" max-width="300"> </v-img> -->
@@ -28,7 +36,7 @@
               onblur=" this.placeholder = '  검색어를 입력하세요.'"
             />
 
-            <button class="button" @click="moveToMap()">검색</button>
+            <button class="button" @click="[write(), moveToMap()]">검색</button>
             <container class="rel_search">
               <ul class="search_list"></ul>
             </container>
@@ -145,7 +153,7 @@ export default {
 
     write: function () {
       this.value = this.$refs.getValue.value;
-
+      console.log("가기 전 : " + this.value);
       this.showLocation(this.value);
     },
   },
