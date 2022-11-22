@@ -5,6 +5,10 @@
         <div v-if="place === null">
           <div id="map" class="map"></div>
         </div>
+        <div v-else>
+          <div id="map" class="map"></div>
+          {{ move() }}
+        </div>
       </v-col>
       <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
         <div>
