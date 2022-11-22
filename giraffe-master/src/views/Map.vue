@@ -11,7 +11,8 @@
         </div>
       </v-col>
       <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
-        <div>
+        <div v-if="place == null"></div>
+        <div v-if="place != null">
           <div>
             <div
               style="
@@ -23,7 +24,7 @@
             >
               <h4 class="text-h5 font-weight-bold pt-4 pb-4">아파트 상세 정보</h4>
               <div>
-                <v-btn class="mx-2" fab small color="error">
+                <v-btn class="mx-2" fab small color="error" @click="closeSideBar">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </div>
@@ -48,7 +49,6 @@
         </div>
       </v-col>
     </v-row>
-    <button @click="move()">버튼</button>
   </div>
 </template>
 
@@ -61,7 +61,7 @@ export default {
       geocoder: null,
       place: this.$store.state.location,
       display: false,
-      aptCode: "11110000000001",
+      aptCode: "",
       headers: [
         { text: "계약일", value: "dealDate" },
         { text: "매매가격(만원)", value: "dealAmount" },
@@ -129,7 +129,6 @@ export default {
 
       //지도 생성
       this.map = new kakao.maps.Map(container, options);
-      console.log("map좀 ㅅㅂ1");
       console.log(this.map);
     },
 
@@ -167,6 +166,13 @@ export default {
           temp.setCenter(coords);
         }
       });
+    },
+    closeSideBar() {
+      console.log("close");
+      document.querySelector(".right-info").setAttribute("display", "none");
+      document.querySelector(".left-map").setAttribute("cols", 12);
+      document.querySelector(".left-map").setAttribute("lg", 12);
+      document.querySelector(".left-map").setAttribute("xl", 12);
     },
   },
   created() {
