@@ -1,16 +1,8 @@
 <template>
   <div>
     <div>
-      <v-row
-        class="flex-column"
-        align="center"
-        justify="center"
-        style="margin-top: 20vh; margin-bottom: 30vh"
-      >
-        <v-col
-          cols="12"
-          style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px"
-        >
+      <v-row class="flex-column" align="center" justify="center" style="margin-top: 20vh; margin-bottom: 30vh">
+        <v-col cols="12" style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px">
           <v-row justify="center" class="mt-500">
             <h1 style="font-size: 50px; padding-bottom: 20px">어떤 집을 찾고 계세요?</h1>
             <!-- <v-img src="../images/happyhouse-removebg-preview.png" max-width="300"> </v-img> -->
@@ -41,7 +33,7 @@
               :loading="loading2"
               :disabled="loading2"
               color="success"
-              @click="moveToMap()"
+              @click="[write(), moveToMap()]"
               style="margin-left: 0px"
             >
               검색
@@ -58,6 +50,7 @@
 
 <script>
 import http from "@/util/http-common";
+import { mapMutations } from "vuex";
 
 // var findList = [];
 $(function () {
@@ -111,8 +104,12 @@ export default {
     return {
       text: "",
       searchItem: "",
+      value: "",
       findList: [],
     };
+  },
+  mounted() {
+    console.log(this.$store.state);
   },
   methods: {
     searchList(event) {
@@ -144,12 +141,20 @@ export default {
           });
         }
         this.text = event.target.value;
-        console.log(this.text);
       });
     },
     moveToMap() {
       this.value = this.$router.push({ path: "/map", params: this.$refs.getValue.value });
-      console.log("here :" + this.$refs.getValue.value);
+      console.log("가기 전 : " + this.$refs.getValue.value);
+    },
+    ...mapMutations({
+      showLocation: "SHOW_LOCATION",
+    }),
+
+    write: function () {
+      this.value = this.$refs.getValue.value;
+
+      this.showLocation(this.value);
     },
   },
   components: {
