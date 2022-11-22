@@ -15,7 +15,8 @@
     "vue-router": "^3.2.0",
     "vuejs-paginate": "^2.1.0",
     "vuetify": "^2.6.0",
-    "vuex": "^2.6.2"
+    "vuex": "^2.6.2",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-vuex": "~5.0.0",
