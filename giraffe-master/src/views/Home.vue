@@ -28,7 +28,7 @@
               onblur=" this.placeholder = '  검색어를 입력하세요.'"
             />
 
-            <button class="button" @click="moveToMap()">검색</button>
+            <button class="button" @click="[write(), moveToMap()]">검색</button>
             <container class="rel_search">
               <ul class="search_list"></ul>
             </container>
@@ -137,7 +137,6 @@ export default {
     },
     moveToMap() {
       this.value = this.$router.push({ path: "/map", params: this.$refs.getValue.value });
-      console.log("가기 전 : " + this.$refs.getValue.value);
     },
     ...mapMutations({
       showLocation: "SHOW_LOCATION",
@@ -145,7 +144,7 @@ export default {
 
     write: function () {
       this.value = this.$refs.getValue.value;
-
+      console.log("가기 전 : " + this.$refs.getValue.value);
       this.showLocation(this.value);
     },
   },
