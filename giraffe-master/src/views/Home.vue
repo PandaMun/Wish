@@ -145,7 +145,6 @@ export default {
     },
     moveToMap() {
       this.value = this.$router.push({ path: "/map", params: this.$refs.getValue.value });
-      console.log("가기 전 : " + this.$refs.getValue.value);
     },
     ...mapMutations({
       showLocation: "SHOW_LOCATION",
@@ -153,7 +152,7 @@ export default {
 
     write: function () {
       this.value = this.$refs.getValue.value;
-      console.log("가기 전 : " + this.value);
+      console.log("가기 전 : " + this.$refs.getValue.value);
       this.showLocation(this.value);
     },
   },

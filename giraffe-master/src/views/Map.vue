@@ -1,7 +1,15 @@
 <template>
   <div>
     <v-row class="overflow-hidden">
-      <v-col class="pa-0 left-map" cols="9" lg="9" xl="9"> <div id="map" class="map"></div></v-col>
+      <v-col class="pa-0 left-map" cols="9" lg="9" xl="9">
+        <div v-if="place === null">
+          <div id="map" class="map"></div>
+        </div>
+        <div v-else>
+          <div id="map" class="map"></div>
+          {{ move() }}
+        </div>
+      </v-col>
       <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
         <div>
           <div>
@@ -40,6 +48,7 @@
         </div>
       </v-col>
     </v-row>
+    <button @click="move()">버튼</button>
   </div>
 </template>
 
@@ -48,9 +57,9 @@ import http from "@/util/http-common";
 export default {
   data() {
     return {
-      map: null,
+      map: Object,
       geocoder: null,
-
+      place: this.$store.state.location,
       display: false,
       aptCode: "11110000000001",
       headers: [
@@ -64,8 +73,26 @@ export default {
     };
   },
   mounted() {
-    console.log("간 후  : " + this.$store.state.location);
-    window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
+    // window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
+    console.log("mount 후 : " + this.$store.state.location);
+
+    if (window.kakao && window.kakao.maps) {
+      console.log("1");
+      this.initMap();
+    } else {
+      console.log("2");
+      const script = document.createElement("script");
+      /* global kakao */
+      // script.src = "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
+      script.src =
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639&libraries=services";
+      script.onload = () => kakao.maps.load(this.initMap);
+
+      document.head.appendChild(script);
+
+      // this.makeDeals();
+      console.log("map : " + this.$route.params);
+    }
   },
 
   methods: {
@@ -96,61 +123,54 @@ export default {
       var container = document.getElementById("map");
       //지도를 생성할 때 필요한 기본 옵션
       var options = {
-        center: new kakao.maps.LatLng(35.190801118503, 126.82393787615513), //지도의 중심좌표
+        center: new kakao.maps.LatLng(33.450701, 126.570667), //지도의 중심좌표
         level: 3, //지도의 레벨(확대, 축소 정도)
       };
 
       //지도 생성
       this.map = new kakao.maps.Map(container, options);
+      console.log("map좀 ㅅㅂ1");
+      console.log(this.map);
     },
 
     move() {
       // 주소-좌표 변환 객체를 생성합니다
       this.geocoder = new kakao.maps.services.Geocoder();
 
-      // 주소로 좌표를 검색합니다
-      geocoder.addressSearch("제주특별자치도 제주시 첨단로 242", function (result, status) {
+      // 검색한 주소 설정
+      var temp = this.map;
+      this.place = this.$store.state.location;
+      console.log("검색 후 : " + this.place);
+
+      // 검색한 주소로 이동
+      this.geocoder.addressSearch(this.place, function (result, status) {
         // 정상적으로 검색이 완료됐으면
         if (status === kakao.maps.services.Status.OK) {
           var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
+          console.log("place 좌표 : " + coords);
           // 결과값으로 받은 위치를 마커로 표시합니다
           var marker = new kakao.maps.Marker({
-            map: map,
+            // map: this.map,
             position: coords,
           });
+
+          // 마커 찍기
+          marker.setMap(temp);
 
           // 인포윈도우로 장소에 대한 설명을 표시합니다
           var infowindow = new kakao.maps.InfoWindow({
             content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>',
           });
-          infowindow.open(map, marker);
-
+          infowindow.open(temp, marker);
           // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-          this.map.setCenter(coords);
+          temp.setCenter(coords);
         }
       });
     },
   },
   created() {
-    if (window.kakao && window.kakao.maps) {
-      console.log("1");
-      this.initMap();
-    } else {
-      console.log("2");
-      const script = document.createElement("script");
-      /* global kakao */
-      script.onload = () => kakao.maps.load(this.initMap);
-      script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
-      document.head.appendChild(script);
-
-      this.makeDeals();
-      console.log("map : " + this.$route.params);
-    }
-    // this.initMap();
-    // this.addKakaoMapScript();
-    // window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
+    this.makeDeals();
   },
 
   computed: {
