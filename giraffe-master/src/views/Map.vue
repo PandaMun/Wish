@@ -106,6 +106,9 @@ export default {
     makeDeals() {
       let url = "/wish/apartments/info/" + this.aptCode;
       http.get(url).then(({ data }) => {
+        console.log("aptCode : " + this.aptCode);
+        console.log(url);
+        console.log("아파트 거래내역 호출");
         console.log(data);
         this.deals = data;
       });
@@ -125,8 +128,9 @@ export default {
           let tmp = {
             title: row.apartmentName,
             latlng: new kakao.maps.LatLng(row.lat, row.lng),
+            aptCode: row.aptCode,
           };
-          console.log("tmp : " + tmp.title + " " + tmp.latlng);
+          console.log("tmp : " + tmp.title + " " + tmp.latlng + " " + tmp.aptCode);
           this.positions.push(tmp);
         });
         this.move();
@@ -156,6 +160,7 @@ export default {
     },
 
     move() {
+      const vueInstance = this;
       // 주소-좌표 변환 객체를 생성합니다
       this.geocoder = new kakao.maps.services.Geocoder();
 
@@ -204,8 +209,24 @@ export default {
           position: this.positions[i].latlng, // 마커를 표시할 위치
           title: this.positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
           image: markerImage, // 마커 이미지
+          clickable: true, // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
+          aptCode: this.positions[i].aptCode,
         });
         marker.setMap(this.map);
+        console.log("asdfasdf:" + this.positions);
+        function hello(i) {
+          return function () {
+            console.log(marker.aptCode);
+            console.log("i: " + i);
+            console.log("vueInstance.positions[i]", vueInstance.positions[i]);
+            vueInstance.aptCode = vueInstance.positions[i].aptCode;
+            console.log("여기 aptCode : " + vueInstance.aptCode);
+            // getInfo();
+            vueInstance.makeDeals();
+            vueInstance.openSideBar();
+          };
+        }
+        kakao.maps.event.addListener(marker, "click", hello(i));
         console.log("this.map : " + this.map);
       }
     },
