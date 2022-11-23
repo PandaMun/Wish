@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row class="overflow-hidden">
-      <v-col class="pa-0 left-map" cols="9" lg="9" xl="9">
+      <v-col class="pa-0 left-map" cols="12" lg="12" xl="12">
         <div v-if="place === null">
           <div id="map" class="map"></div>
         </div>
@@ -10,7 +10,7 @@
           <!-- {{ move() }} -->
         </div>
       </v-col>
-      <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
+      <v-col class="right-info overflow-auto pa-5" style="height: 94vh">
         <div v-if="place == null"></div>
         <div v-if="place != null">
           <div>
@@ -31,8 +31,9 @@
             </div>
             <v-divider></v-divider>
             <div>
-              <v-img src="../images/background.png" :aspect-ratio="16 / 9" height="100%"></v-img>
-              <h4 class="text-h6 font-weight-bold pt-4 pb-4">반포 자이 2차 아파트</h4>
+              <div id="roadview" style="width: 100%; height: 300px"></div>
+              <!-- <v-img src="../images/background.png" :aspect-ratio="16 / 9" height="100%"></v-img> -->
+              <h4 class="text-h6 font-weight-bold pt-4 pb-4">{{ aptName }}</h4>
               <v-divider></v-divider>
               <h4 class="text-h5 font-weight-bold pt-4 pb-4">거래내역</h4>
               <template>
@@ -77,6 +78,7 @@ export default {
       positions: [],
     };
   },
+  watch: {},
   mounted() {
     // window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
     console.log("mount 후 : " + this.$store.state.location);
@@ -129,6 +131,8 @@ export default {
           let tmp = {
             title: row.apartmentName,
             latlng: new kakao.maps.LatLng(row.lat, row.lng),
+            lat: row.lat,
+            lng: row.lng,
             aptCode: row.aptCode,
           };
           console.log("tmp : " + tmp.title + " " + tmp.latlng + " " + tmp.aptCode);
@@ -222,10 +226,24 @@ export default {
             console.log("i: " + i);
             console.log("vueInstance.positions[i]", vueInstance.positions[i]);
             vueInstance.aptCode = vueInstance.positions[i].aptCode;
+            vueInstance.aptName = vueInstance.positions[i].title;
             console.log("여기 aptCode : " + vueInstance.aptCode);
             // getInfo();
             vueInstance.makeDeals();
             vueInstance.openSideBar();
+            var roadviewContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
+            var roadview = new kakao.maps.Roadview(roadviewContainer); //로드뷰 객체
+            var roadviewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+
+            var position = new kakao.maps.LatLng(
+              vueInstance.positions[i].lat,
+              vueInstance.positions[i].lng
+            );
+
+            // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+            roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+              roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+            });
           };
         }
         kakao.maps.event.addListener(marker, "click", hello(i));
