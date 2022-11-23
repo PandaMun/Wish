@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row class="overflow-hidden">
-      <v-col class="pa-0 left-map" cols="9" lg="9" xl="9">
+      <v-col class="pa-0 left-map" cols="12" lg="12" xl="12">
         <div v-if="place === null">
           <div id="map" class="map"></div>
         </div>
@@ -10,7 +10,7 @@
           <!-- {{ move() }} -->
         </div>
       </v-col>
-      <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
+      <v-col class="right-info overflow-auto pa-5" style="height: 94vh">
         <div v-if="place == null"></div>
         <div v-if="place != null">
           <div>
@@ -31,8 +31,9 @@
             </div>
             <v-divider></v-divider>
             <div>
-              <v-img src="../images/background.png" :aspect-ratio="16 / 9" height="100%"></v-img>
-              <h4 class="text-h6 font-weight-bold pt-4 pb-4">반포 자이 2차 아파트</h4>
+              <div id="roadview" style="width: 100%; height: 300px"></div>
+              <!-- <v-img src="../images/background.png" :aspect-ratio="16 / 9" height="100%"></v-img> -->
+              <h4 class="text-h6 font-weight-bold pt-4 pb-4">{{ aptName }}</h4>
               <v-divider></v-divider>
               <h4 class="text-h5 font-weight-bold pt-4 pb-4">거래내역</h4>
               <template>
@@ -77,6 +78,7 @@ export default {
       positions: [],
     };
   },
+  watch: {},
   mounted() {
     // window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
     console.log("mount 후 : " + this.$store.state.location);
@@ -129,6 +131,8 @@ export default {
           let tmp = {
             title: row.apartmentName,
             latlng: new kakao.maps.LatLng(row.lat, row.lng),
+            lat: row.lat,
+            lng: row.lng,
             aptCode: row.aptCode,
           };
           console.log("tmp : " + tmp.title + " " + tmp.latlng + " " + tmp.aptCode);
@@ -147,6 +151,8 @@ export default {
       document.head.appendChild(script);
     },
     initMap() {
+      const vueInstance = this;
+      var nlevel;
       //지도를 담을 영역의 DOM 레퍼런스
       var container = document.getElementById("map");
       //지도를 생성할 때 필요한 기본 옵션
@@ -158,6 +164,106 @@ export default {
       //지도 생성
       this.map = new kakao.maps.Map(container, options);
       console.log(this.map);
+      function hello2() {
+        return function () {
+          console.log("????" + this);
+          // 지도 영역정보를 얻어옵니다
+          var bounds = this.getBounds();
+
+          // 영역정보의 남서쪽 정보를 얻어옵니다
+          var swLatlng = bounds.getSouthWest();
+
+          // 영역정보의 북동쪽 정보를 얻어옵니다
+          var neLatlng = bounds.getNorthEast();
+
+          var message = "<p>영역좌표는 남서쪽 위도, 경도는  " + swLatlng.toString() + "이고 <br>";
+          message += "북동쪽 위도, 경도는  " + neLatlng.toString() + "입니다 </p>";
+
+          console.log(message);
+
+          var neLat = this.getBounds().getNorthEast().getLat();
+          var neLng = this.getBounds().getNorthEast().getLng();
+          var swLat = this.getBounds().getSouthWest().getLat();
+          var swLng = this.getBounds().getSouthWest().getLng();
+
+          let ML = {
+            swLat: swLat,
+            swLng: swLng,
+            neLat: neLat,
+            neLng: neLng,
+            mapLevel: options.level,
+          };
+
+          let url = "/wish/apartments/list";
+          http.post(url, ML).then(({ data }) => {
+            console.log("맵 옮기고 난 아파트 : " + data);
+            this.positions = [];
+            data.map((row) => {
+              let tmp = {
+                title: row.apartmentName,
+                latlng: new kakao.maps.LatLng(row.lat, row.lng),
+                lat: row.lat,
+                lng: row.lng,
+                aptCode: row.aptCode,
+              };
+              console.log("tmp : " + tmp.title + " " + tmp.latlng + " " + tmp.aptCode);
+              this.positions.push(tmp);
+            });
+
+            var imageSrc =
+              "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+            for (var i = 0; i < this.positions.length; i++) {
+              console.log("여긴?? " + this.positions[i].title);
+              // 마커 이미지의 이미지 크기 입니다
+              var imageSize = new kakao.maps.Size(24, 35);
+
+              // 마커 이미지를 생성합니다
+              var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+              console.log(this);
+              // 마커를 생성합니다
+              var marker = new kakao.maps.Marker({
+                map: this.map, // 마커를 표시할 지도
+                position: this.positions[i].latlng, // 마커를 표시할 위치
+                title: this.positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                image: markerImage, // 마커 이미지
+                clickable: true, // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
+                aptCode: this.positions[i].aptCode,
+              });
+              console.log("this점맵 : " + vueInstance.map);
+              marker.setMap(vueInstance.map);
+              // console.log("asdfasdf:" + this.positions);
+              function hello(i) {
+                return function () {
+                  console.log(marker.aptCode);
+                  console.log("i: " + i);
+                  console.log("vueInstance.positions[i]", vueInstance.positions[i]);
+                  vueInstance.aptCode = vueInstance.positions[i].aptCode;
+                  vueInstance.aptName = vueInstance.positions[i].title;
+                  console.log("여기 aptCode : " + vueInstance.aptCode);
+                  // getInfo();
+                  vueInstance.makeDeals();
+                  vueInstance.openSideBar();
+                  var roadviewContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
+                  var roadview = new kakao.maps.Roadview(roadviewContainer); //로드뷰 객체
+                  var roadviewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+
+                  var position = new kakao.maps.LatLng(
+                    vueInstance.positions[i].lat,
+                    vueInstance.positions[i].lng
+                  );
+
+                  // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+                  roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+                    roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+                  });
+                };
+              }
+              kakao.maps.event.addListener(marker, "click", hello(i));
+            }
+          });
+        };
+      }
+      kakao.maps.event.addListener(this.map, "dragend", hello2());
     },
 
     move() {
@@ -189,7 +295,9 @@ export default {
           // 인포윈도우로 장소에 대한 설명을 표시합니다
           var infowindow = new kakao.maps.InfoWindow({
             content:
-              '<div style="width:150px;text-align:center;padding:6px 0;">' + "우리회사" + "</div>",
+              '<div style="width:150px;text-align:center;padding:6px 0;">' +
+              vueInstance.place +
+              "</div>",
           });
           infowindow.open(temp, marker);
           // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
@@ -198,6 +306,7 @@ export default {
       });
       var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
       console.log("this.positions : " + this.positions.length);
+
       for (var i = 0; i < this.positions.length; i++) {
         // 마커 이미지의 이미지 크기 입니다
         var imageSize = new kakao.maps.Size(24, 35);
@@ -222,10 +331,24 @@ export default {
             console.log("i: " + i);
             console.log("vueInstance.positions[i]", vueInstance.positions[i]);
             vueInstance.aptCode = vueInstance.positions[i].aptCode;
+            vueInstance.aptName = vueInstance.positions[i].title;
             console.log("여기 aptCode : " + vueInstance.aptCode);
             // getInfo();
             vueInstance.makeDeals();
             vueInstance.openSideBar();
+            var roadviewContainer = document.getElementById("roadview"); //로드뷰를 표시할 div
+            var roadview = new kakao.maps.Roadview(roadviewContainer); //로드뷰 객체
+            var roadviewClient = new kakao.maps.RoadviewClient(); //좌표로부터 로드뷰 파노ID를 가져올 로드뷰 helper객체
+
+            var position = new kakao.maps.LatLng(
+              vueInstance.positions[i].lat,
+              vueInstance.positions[i].lng
+            );
+
+            // 특정 위치의 좌표와 가까운 로드뷰의 panoId를 추출하여 로드뷰를 띄운다.
+            roadviewClient.getNearestPanoId(position, 50, function (panoId) {
+              roadview.setPanoId(panoId, position); //panoId와 중심좌표를 통해 로드뷰 실행
+            });
           };
         }
         kakao.maps.event.addListener(marker, "click", hello(i));
