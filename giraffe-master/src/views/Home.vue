@@ -1,16 +1,8 @@
 <template>
   <div>
     <div>
-      <v-row
-        class="flex-column"
-        align="center"
-        justify="center"
-        style="margin-top: 20vh; margin-bottom: 20vh"
-      >
-        <v-col
-          cols="12"
-          style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px"
-        >
+      <v-row class="flex-column" align="center" justify="center" style="margin-top: 20vh; margin-bottom: 20vh">
+        <v-col cols="12" style="background-color: white; padding-top: 100px; padding-bottom: 100px; width: 1000px">
           <v-row justify="center" class="mt-500">
             <h1 style="font-size: 50px; padding-bottom: 20px">어떤 집을 찾고 계세요?</h1>
             <!-- <v-img src="../images/happyhouse-removebg-preview.png" max-width="300"> </v-img> -->
@@ -35,6 +27,7 @@
               onfocus="this.placeholder = ''"
               onblur=" this.placeholder = '  검색어를 입력하세요.'"
             />
+            <input type="text" v-model="dongCode" id="dongCode" />
 
             <button class="button" @click="[write(), moveToMap()]">검색</button>
             <container class="rel_search">
@@ -106,9 +99,12 @@ export default {
       searchItem: "",
       value: "",
       findList: [],
+      dongCode: "",
+      sang: "",
     };
   },
   mounted() {
+    this.sang = "";
     console.log(this.$store.state);
   },
   methods: {
@@ -122,8 +118,13 @@ export default {
       }
       http.get(`/wish/dongs/${this.text}`).then(({ data }) => {
         let tmp = [];
+        console.log(data);
         data.map((row) => {
-          tmp.push(row.sidoName + " " + row.gugunName + " " + row.dongName);
+          let o = {
+            label: row.sidoName + " " + row.gugunName + " " + row.dongName,
+            value: row.dongCode,
+          };
+          tmp.push(o);
         });
         this.findList = tmp;
         console.log(this.findList);
@@ -133,6 +134,15 @@ export default {
             source: this.findList,
             focus: function (event, ui) {
               // 방향키로 자동완성단어 선택 가능하게 만들어줌
+              return false;
+            },
+            select: function (event, ui) {
+              // place the person.given_name value into the textfield called 'select_origin'...
+              $("#autoComplete").val(ui.item.label);
+              // this.dongCode = ui.item.value;
+              // $("#dongCode").val(ui.item.value);
+              $("#dongCode").attr("value", ui.item.value);
+              this.dongCode = event.target.value;
               return false;
             },
             minLength: 2, // 최소 글자수
@@ -148,12 +158,17 @@ export default {
     },
     ...mapMutations({
       showLocation: "SHOW_LOCATION",
+      storeDongcode: "STORE_DONGCODE",
     }),
 
     write: function () {
+      console.log("동코드 : " + $("#dongCode").value);
+      this.dongCode = $("#dongCode").value;
       this.value = this.$refs.getValue.value;
       console.log("가기 전 : " + this.$refs.getValue.value);
       this.showLocation(this.value);
+      console.log("가기 전 dongCode : " + this.dongCode);
+      this.storeDongcode(this.dongCode);
     },
   },
   components: {
