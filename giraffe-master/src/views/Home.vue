@@ -149,6 +149,8 @@ export default {
               // this.dongCode = ui.item.value;
               // $("#dongCode").val(ui.item.value);
               $("#dongCode").attr("value", ui.item.value);
+              console.log("label : " + ui.item.label);
+              console.log("value : " + ui.item.value);
               return false;
             },
             minLength: 2, // 최소 글자수
