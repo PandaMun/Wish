@@ -14,14 +14,7 @@
         <div v-if="place == null"></div>
         <div v-if="place != null">
           <div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding-bottom: 10px;
-              "
-            >
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px">
               <h4 class="text-h5 font-weight-bold pt-4 pb-4">아파트 상세 정보</h4>
               <div>
                 <v-btn class="mx-2" fab small color="error" @click="closeSideBar">
@@ -61,6 +54,7 @@ export default {
       geocoder: null,
       place: this.$store.state.location,
       display: false,
+      dc: "",
       aptCode: "",
       headers: [
         { text: "계약일", value: "dealDate" },
@@ -141,8 +135,7 @@ export default {
       const script = document.createElement("script");
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
-      script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
+      script.src = "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
       document.head.appendChild(script);
     },
     initMap() {
@@ -186,10 +179,10 @@ export default {
           marker.setMap(temp);
 
           // 인포윈도우로 장소에 대한 설명을 표시합니다
-          // var infowindow = new kakao.maps.InfoWindow({
-          //   content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>',
-          // });
-          // infowindow.open(temp, marker);
+          var infowindow = new kakao.maps.InfoWindow({
+            content: '<div style="width:150px;text-align:center;padding:6px 0;">' + "우리회사" + "</div>",
+          });
+          infowindow.open(temp, marker);
           // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
           temp.setCenter(coords);
         }
