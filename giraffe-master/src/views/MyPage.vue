@@ -161,36 +161,49 @@
   </div>
 </template>
 <script>
+import { mapState, mapGetters } from "vuex";
+const memberStore = "memberStore";
 export default {
   data() {
     return {
       dialog: false,
 
-      id: "ssafy",
-      name: "김싸피",
-      address: "장덕동",
-      email: "ssafy@ssafy.com",
-      phone: "010-1234-5678",
-      password: "admin",
+      id: "",
+      name: "",
+      address: "",
+      email: "",
+      phone: "",
+      password: "",
     };
   },
+  created() {
+    this.id = this.data.userId;
+    this.name = this.data.username;
+    this.address = this.data.address;
+    this.email = this.data.email;
+    this.phone = this.data.phoneNumber;
+  },
   methods: {
-    getUserInfo(id) {
-      let url = "wish/users/" + id;
-      http.get(url).then(({ data }) => {
-        this.id = data.id;
-        this.name = data.name;
-        this.address = data.address;
-        this.email = data.email;
-        this.phone = data.phoneNumber;
-      });
-    },
+    // getUserInfo(id) {
+    //   let url = "wish/users/" + id;
+    //   http.get(url).then(({ data }) => {
+    //     this.id = data.id;
+    //     this.name = data.name;
+    //     this.address = data.address;
+    //     this.email = data.email;
+    //     this.phone = data.phoneNumber;
+    //   });
+    // },
     modifyPassword(id) {
       let url = "wish/users/" + id;
       http.put(url, { password: this.password }).then(({ data }) => {
         console.log(data);
       });
     },
+  },
+  computed: {
+    ...mapState(memberStore, ["isLogin", "data"]),
+    ...mapGetters(["checkUserInfo"]),
   },
 };
 </script>

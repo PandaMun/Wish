@@ -26,7 +26,7 @@
                     <legend style="width: 0px"><span class="notranslate">​</span></legend>
                   </fieldset>
                   <div class="v-text-field__slot">
-                    <input id="input-12" type="text" v-model="userId" placeholder="ID" />
+                    <input id="input-12" type="text" v-model="user.userId" placeholder="ID" />
                   </div>
                 </div>
                 <div class="v-text-field__details">
@@ -46,7 +46,7 @@
                     <input
                       id="input-15"
                       type="password"
-                      v-model="userPassword"
+                      v-model="user.password"
                       placeholder="Password"
                     />
                   </div>
@@ -85,7 +85,7 @@
             <button
               type="button"
               class="success v-btn v-btn--block v-btn--is-elevated v-btn--has-bg theme--light v-size--x-large"
-              @click="loginUser()"
+              @click="confirm()"
             >
               <span class="v-btn__content">Sign In</span>
             </button>
@@ -93,7 +93,7 @@
             <button
               type="button"
               class="secondary v-btn v-btn--block v-btn--is-elevated v-btn--has-bg theme--light v-size--x-large"
-              @click="signUp()"
+              @click="signup()"
             >
               <span class="v-btn__content">Sign up</span>
             </button>
@@ -148,7 +148,6 @@
   </v-container>
 </template>
 <script>
-// import http from "@/util/http-common";
 import { mapState, mapActions } from "vuex";
 
 const memberStore = "memberStore";
@@ -156,26 +155,39 @@ const memberStore = "memberStore";
 export default {
   data() {
     return {
-      userId: "",
-      userPassword: "",
-      drawer: null,
-      grantType: "",
-      accessToken: "",
-      refreshToken: "",
+      user: {
+        userId: "",
+        password: "",
+      },
     };
   },
 
+  computed: {
+    ...mapState(memberStore, ["isLogin", "isLoginError", "userInfo"]),
+  },
   methods: {
-    ...mapActions(memberStore, ["userConfirm"]),
-    loginUser() {
-      let request = {
-        userId: this.userId,
-        password: this.userPassword,
-      };
+    ...mapActions(memberStore, ["userConfirm", "getUserInfo"]),
+    // ...mapActions(["memberStore/userConfirm"]),
+    async confirm() {
+      console.log(this.user);
+      console.log(this);
+      await this.userConfirm(this.user);
 
-      this.userConfirm(request);
+      // await this.$store.dispatch("memberStore/userConfirm", this.user);
+      let token = sessionStorage.getItem("accessToken");
+      // console.log("1. confirm() token >> " + token);
+      if (this.isLogin) {
+        console.log("isLogin");
+        await this.getUserInfo(token);
+        // console.log("4. confirm() userInfo :: ", this.userInfo);
+        this.$router.push("/");
+      }
+    },
+    signup() {
+      this.$router.push("/signup");
     },
   },
+
   // http.post("/wish/login", request).then(({ data }) => {
   //   if (typeof data.data.accessToken != "undefined") {
   //     VueCookies.set(
@@ -196,9 +208,5 @@ export default {
   // if (VueCookies.get("Authorization") != null) {
   //   this.$router.push("/");
   // }
-
-  signUp() {
-    this.$router.push("/signup");
-  },
 };
 </script>

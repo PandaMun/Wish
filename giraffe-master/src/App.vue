@@ -11,11 +11,12 @@
 </template>
 
 <script>
+import AppBar from "@/components/layout/appbar.vue";
 export default {
   name: "App",
 
   components: {
-    AppBar: () => import("@/components/layout/appbar.vue"),
+    AppBar,
     // Footer: () => import("@/components/layout/footer.vue"),
   },
   data: () => ({}),

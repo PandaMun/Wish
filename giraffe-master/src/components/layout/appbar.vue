@@ -67,9 +67,24 @@
               >{{ item.title }}
             </v-btn>
           </v-col>
-
           <v-col v-if="$vuetify.breakpoint.mdAndUp" class="text-right">
-            <v-btn
+            <v-badge v-if="data" bordered color="error" icon="mdi-lock" overlap>{{
+              data.username
+            }}</v-badge>
+            <v-btn v-if="data" color="danger" to="/mypage" class="ml-3 text-capitalize">
+              <v-icon left>mdi-login</v-icon>
+              MyPage
+            </v-btn>
+            <v-btn v-if="data" color="danger" class="ml-3 text-capitalize" @click="onClickLogout()"
+              ><v-icon left>mdi-login</v-icon>
+              Logout
+            </v-btn>
+            <v-btn v-else color="danger" to="/login" class="ml-3 text-capitalize"
+              ><v-icon left>mdi-login</v-icon>
+              Login
+            </v-btn>
+
+            <!-- <v-btn
               v-for="(item, i) in btnItems"
               :key="i"
               :color="item.color"
@@ -81,7 +96,7 @@
             >
               <v-icon left>{{ item.icon }}</v-icon>
               {{ item.text }}
-            </v-btn>
+            </v-btn> -->
           </v-col>
         </v-row>
       </v-container>
@@ -90,9 +105,11 @@
 </template>
 
 <script>
+import { mapState, mapGetters, mapActions } from "vuex";
+const memberStore = "memberStore";
 export default {
+  name: "appbar",
   data: () => ({
-    drawer: null,
     btnItems: [
       {
         text: "MyPage",
@@ -139,5 +156,28 @@ export default {
       },
     ],
   }),
+  computed: {
+    ...mapState(memberStore, ["isLogin", "data", "accessToken", "refreshToken"]),
+    ...mapGetters(["checkUserInfo"]),
+  },
+  methods: {
+    ...mapActions(memberStore, ["userLogout"]),
+    // ...mapMutations(memberStore, ["SET_IS_LOGIN", "SET_USER_INFO"]),
+    onClickLogout() {
+      // this.SET_IS_LOGIN(false);
+      // this.SET_USER_INFO(null);
+      // sessionStorage.removeItem("access-token");
+      // if (this.$route.path != "/") this.$router.push({ name: "main" });
+      console.log(this.data.userId);
+      //vuex actions에서 userLogout 실행(Backend에 저장 된 리프레시 토큰 없애기
+      //+ satate에 isLogin, userInfo 정보 변경)
+      // this.$store.dispatch("userLogout", this.userInfo.userid);
+      console.log("accessToken : " + sessionStorage);
+      this.userLogout(this.accessToken);
+      sessionStorage.removeItem("accessToken"); //저장된 토큰 없애기
+      sessionStorage.removeItem("refreshToken"); //저장된 토큰 없애기
+      if (this.$route.path != "/") this.$router.push("/");
+    },
+  },
 };
 </script>
