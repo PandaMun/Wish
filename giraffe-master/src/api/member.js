@@ -1,3 +1,4 @@
+import memberStore from "../store/modules/memberStore.js";
 import { apiInstance } from "./index.js";
 
 const api = apiInstance();
@@ -17,8 +18,7 @@ async function tokenRegeneration(user, success, fail) {
 }
 
 async function logout(token, success, fail) {
-  console.log("token : " + token)
-  await api.post(`/logout`, { headers: { accessToken: token } }).then(success).catch(fail);
+  await api.post(`/logout`, { headers: { accessToken: sessionStorage.getItem("accessToken") } }).then(success).catch(fail);
 }
 
 export { login, findById, tokenRegeneration, logout };

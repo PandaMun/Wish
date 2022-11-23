@@ -137,8 +137,9 @@ const memberStore = {
             commit("SET_IS_LOGIN", false);
             commit("SET_USER_INFO", null);
             commit("SET_IS_VALID_TOKEN", false);
+
           } else {
-            console.log("유저 정보 없음!!!!");
+            console.log("잘못된 요청입니다.!!!");
           }
         },
         (error) => {
