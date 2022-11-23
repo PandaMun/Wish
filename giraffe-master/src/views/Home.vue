@@ -28,7 +28,6 @@
               onblur=" this.placeholder = '  검색어를 입력하세요.'"
             />
             <input type="text" v-model="dongCode" id="dongCode" />
-
             <button class="button" @click="[write(), moveToMap()]">검색</button>
             <container class="rel_search">
               <ul class="search_list"></ul>
@@ -142,7 +141,6 @@ export default {
               // this.dongCode = ui.item.value;
               // $("#dongCode").val(ui.item.value);
               $("#dongCode").attr("value", ui.item.value);
-              this.dongCode = event.target.value;
               return false;
             },
             minLength: 2, // 최소 글자수
@@ -162,8 +160,8 @@ export default {
     }),
 
     write: function () {
-      console.log("동코드 : " + $("#dongCode").value);
-      this.dongCode = $("#dongCode").value;
+      console.log("동코드 : " + document.getElementById("dongCode").value);
+      this.dongCode = document.getElementById("dongCode").value;
       this.value = this.$refs.getValue.value;
       console.log("가기 전 : " + this.$refs.getValue.value);
       this.showLocation(this.value);
