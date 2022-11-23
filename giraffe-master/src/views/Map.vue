@@ -7,7 +7,7 @@
         </div>
         <div v-else>
           <div id="map" class="map"></div>
-          {{ move() }}
+          <!-- {{ move() }} -->
         </div>
       </v-col>
       <v-col class="right-info overflow-auto pa-5" cols="3" lg="3" xl="3" style="height: 94vh">
@@ -79,6 +79,7 @@ export default {
     if (window.kakao && window.kakao.maps) {
       console.log("1");
       this.initMap();
+      this.move();
     } else {
       console.log("2");
       const script = document.createElement("script");
@@ -169,10 +170,25 @@ export default {
     },
     closeSideBar() {
       console.log("close");
-      document.querySelector(".right-info").setAttribute("display", "none");
-      document.querySelector(".left-map").setAttribute("cols", 12);
-      document.querySelector(".left-map").setAttribute("lg", 12);
-      document.querySelector(".left-map").setAttribute("xl", 12);
+      document.querySelector(".right-info").setAttribute("style", "display:none");
+      document.querySelector(".left-map").classList.remove("col-lg-9");
+      document.querySelector(".left-map").classList.remove("col-xl-9");
+      document.querySelector(".left-map").classList.remove("col-9");
+      document.querySelector(".left-map").classList.add("col-lg-12");
+      document.querySelector(".left-map").classList.add("col-xl-12");
+      document.querySelector(".left-map").classList.add("col-12");
+      this.initMap();
+      this.move();
+    },
+    openSideBar() {
+      console.log("open");
+      document.querySelector(".right-info").setAttribute("style", "display:block");
+      document.querySelector(".left-map").classList.add("col-lg-9");
+      document.querySelector(".left-map").classList.add("col-xl-9");
+      document.querySelector(".left-map").classList.add("col-9");
+      document.querySelector(".left-map").classList.remove("col-lg-12");
+      document.querySelector(".left-map").classList.remove("col-xl-12");
+      document.querySelector(".left-map").classList.remove("col-12");
     },
   },
   created() {
