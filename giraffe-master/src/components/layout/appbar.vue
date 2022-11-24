@@ -69,7 +69,7 @@
           </v-col>
           <v-col v-if="$vuetify.breakpoint.mdAndUp" class="text-right">
             <v-badge v-if="data" bordered color="error" icon="mdi-lock" overlap>{{
-              data.username
+              data.name
             }}</v-badge>
             <v-btn v-if="data" color="danger" to="/mypage" class="ml-3 text-capitalize">
               <v-icon left>mdi-login</v-icon>

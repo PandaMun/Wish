@@ -11,7 +11,12 @@
             <v-dialog persistent v-model="write" max-width="600px">
               <template v-slot:activator="{ on, attrs }">
                 <v-row class="px-3" justify="end">
-                  <v-btn v-bind="attrs" v-on="on" class="px-3 green font-weight-bold white--text">
+                  <v-btn
+                    v-if="auth == 'ROLE_ADMIN'"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="px-3 green font-weight-bold white--text"
+                  >
                     작성하기
                   </v-btn>
                 </v-row>
@@ -149,6 +154,7 @@
                                   확인
                                 </v-btn>
                                 <v-btn
+                                  v-if="auth == 'ROLE_ADMIN'"
                                   color="blue darken-1"
                                   class="font-weight-bold"
                                   text
@@ -157,6 +163,7 @@
                                   수정
                                 </v-btn>
                                 <v-btn
+                                  v-if="auth == 'ROLE_ADMIN'"
                                   color="blue darken-1"
                                   class="font-weight-bold"
                                   text
@@ -308,9 +315,11 @@
 </template>
 
 <script>
+import { apiInstance } from "@/api/index.js";
 import Vue from "vue";
 import http from "@/util/http-common";
 import Paginate from "vuejs-paginate";
+import jwtDecode from "jwt-decode";
 Vue.component("paginate", Paginate);
 
 export default {
@@ -318,7 +327,6 @@ export default {
     return {
       selectPage: 1,
       page: 0,
-
       title: "",
       userId: "",
       content: "",
@@ -336,6 +344,7 @@ export default {
       dialog2: [],
       dialog3: [],
       write: false,
+      auth: "",
     };
   },
 
@@ -449,13 +458,13 @@ export default {
     },
   },
   created() {
+    if (sessionStorage.getItem("accessToken") != null) {
+      this.auth = jwtDecode(sessionStorage.getItem("accessToken")).auth;
+    }
     this.makeList();
   },
   components: {
     Footer: () => import("@/components/layout/footer.vue"),
-  },
-  computed: {
-    ...mapState(memberStore, ["isLogin", "accessToken"]),
   },
 };
 </script>

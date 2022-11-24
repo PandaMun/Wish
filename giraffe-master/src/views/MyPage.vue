@@ -144,12 +144,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            class="font-weight-bold"
-            text
-            @click="modifyPassword('ssafy')"
-          >
+          <v-btn color="blue darken-1" class="font-weight-bold" text @click="modifyPassword()">
             변경
           </v-btn>
           <v-btn color="blue darken-1" class="font-weight-bold" text @click="dialog = false">
@@ -161,6 +156,7 @@
   </div>
 </template>
 <script>
+import http from "@/util/http-common";
 import { mapState, mapGetters } from "vuex";
 const memberStore = "memberStore";
 export default {
@@ -178,7 +174,7 @@ export default {
   },
   created() {
     this.id = this.data.userId;
-    this.name = this.data.username;
+    this.name = this.data.name;
     this.address = this.data.address;
     this.email = this.data.email;
     this.phone = this.data.phoneNumber;
@@ -194,11 +190,21 @@ export default {
     //     this.phone = data.phoneNumber;
     //   });
     // },
-    modifyPassword(id) {
-      let url = "wish/users/" + id;
-      http.put(url, { password: this.password }).then(({ data }) => {
-        console.log(data);
-      });
+    modifyPassword() {
+      let url = "wish/user/password";
+      http
+        .put(url, {
+          userId: this.id,
+          password: this.password,
+        })
+        .then(({ data }) => {
+          if (data.message == "success") {
+            this.dialog = false;
+            alert("비밀번호 변경에 성공하셨습니다.");
+          } else {
+            alert(data.message);
+          }
+        });
     },
   },
   computed: {

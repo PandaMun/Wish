@@ -11,7 +11,12 @@
             <v-dialog persistent v-model="write" max-width="600px">
               <template v-slot:activator="{ on, attrs }">
                 <v-row class="px-3" justify="end">
-                  <v-btn v-bind="attrs" v-on="on" class="px-3 green font-weight-bold white--text">
+                  <v-btn
+                    v-if="auth == 'ROLE_USER'"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="px-3 green font-weight-bold white--text"
+                  >
                     문의하기
                   </v-btn>
                 </v-row>
@@ -149,7 +154,7 @@
                                   확인
                                 </v-btn>
                                 <v-btn
-                                  v-if="qnaList[i].answer === false"
+                                  v-if="qnaList[i].answer === false && qna.userId == userId"
                                   color="blue darken-1"
                                   class="font-weight-bold"
                                   text
@@ -158,7 +163,7 @@
                                   수정
                                 </v-btn>
                                 <v-btn
-                                  v-if="qnaList[i].answer === false"
+                                  v-if="qnaList[i].answer === false && qna.userId == userId"
                                   color="blue darken-1"
                                   class="font-weight-bold"
                                   text
@@ -167,7 +172,7 @@
                                   삭제
                                 </v-btn>
                                 <v-btn
-                                  v-if="qnaList[i].answer === false"
+                                  v-if="qnaList[i].answer === false && auth == 'ROLE_ADMIN'"
                                   color="blue darken-1"
                                   class="font-weight-bold"
                                   text
@@ -319,6 +324,7 @@
 </template>
 
 <script>
+import jwtDecode from "jwt-decode";
 import Vue from "vue";
 import http from "@/util/http-common";
 import Paginate from "vuejs-paginate";
@@ -347,6 +353,8 @@ export default {
       dialog2: [],
       dialog3: [],
       write: false,
+      auth: "",
+      userId: "",
     };
   },
 
@@ -354,7 +362,7 @@ export default {
     registQna() {
       let qnaInfo = {
         title: this.title,
-        userId: "ssafy",
+        userId: this.userId,
         content: this.content,
       };
 
@@ -394,7 +402,7 @@ export default {
       http
         .post(url, {
           id: this.qnaList[i].id,
-          userId: "ssafy",
+          userId: this.userId,
           content: this.rComment,
         })
         .then(({ data }) => {
@@ -411,7 +419,7 @@ export default {
       http
         .patch(url, {
           id: this.qnaList[i].id,
-          userId: "ssafy",
+          userId: this.userId,
           title: this.mTitle,
           content: this.mContent,
         })
@@ -460,6 +468,10 @@ export default {
     },
   },
   created() {
+    if (sessionStorage.getItem("accessToken") != null) {
+      this.userId = jwtDecode(sessionStorage.getItem("accessToken")).sub;
+      this.auth = jwtDecode(sessionStorage.getItem("accessToken")).auth;
+    }
     this.makeList();
   },
   components: {
