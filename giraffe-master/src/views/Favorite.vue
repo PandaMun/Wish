@@ -80,12 +80,22 @@ export default {
       });
     },
     deleteFavorite(dongCode) {
-      let url = "wish/user/interest/" + dongCode;
-      http.delete(url).then(({ data }) => {
-        console.log(data);
-        alert("성공적으로 삭제되었습니다.");
-        // this.makeList();
-      });
+      let url = "/wish/user/interest";
+      console.log(dongCode);
+      console.log(this.userId);
+      http
+        .delete(url, {
+          data: {
+            userId: this.userId,
+            dongCode: dongCode,
+          },
+        })
+        .then(({ data }) => {
+          console.log(data);
+          alert("성공적으로 삭제되었습니다.");
+          this.getFavorites();
+          // this.makeList();
+        });
     },
   },
   created() {
