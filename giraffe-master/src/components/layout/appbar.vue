@@ -172,7 +172,7 @@ export default {
       //+ satate에 isLogin, userInfo 정보 변경)
       // this.$store.dispatch("userLogout", this.userInfo.userid);
       console.log(sessionStorage.getItem("accessToken"));
-      this.userLogout(sessionStorage.getItem("accessToken"));
+      this.userLogout();
       sessionStorage.removeItem("accessToken"); //저장된 토큰 없애기
       sessionStorage.removeItem("refreshToken"); //저장된 토큰 없애기
       console.log(sessionStorage);

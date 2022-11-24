@@ -454,6 +454,9 @@ export default {
   components: {
     Footer: () => import("@/components/layout/footer.vue"),
   },
+  computed: {
+    ...mapState(memberStore, ["isLogin", "accessToken"]),
+  },
 };
 </script>
 

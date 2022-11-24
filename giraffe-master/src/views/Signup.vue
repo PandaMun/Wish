@@ -248,7 +248,7 @@ export default {
       };
       http.post("/wish/sign-up", request).then(({ data }) => {
         console.log(data);
-        if (data == "ok") {
+        if (data == "success") {
           this.$router.push("/login");
         }
       });

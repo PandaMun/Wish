@@ -129,9 +129,8 @@ const memberStore = {
         }
       );
     },
-    async userLogout({ commit }, token) {
+    async userLogout({ commit }) {
       await logout(
-        token,
         ({ data }) => {
           if (data.message === "success") {
             commit("SET_IS_LOGIN", false);
