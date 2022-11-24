@@ -55,6 +55,7 @@
 
 <script>
 import http from "@/util/http-common";
+import jwtDecode from "jwt-decode";
 export default {
   data() {
     return {
@@ -76,10 +77,18 @@ export default {
       dongCode: "",
       aptList: [],
       positions: [],
+
+      userId: "",
     };
   },
   watch: {},
   mounted() {
+    if (sessionStorage.getItem("accessToken") != null) {
+      console.log("asdfasdfasdasdfasdf");
+      this.userId = jwtDecode(sessionStorage.getItem("accessToken")).sub;
+      console.log(jwtDecode(sessionStorage.getItem("accessToken")));
+    }
+    console.log("created userId : " + this.userId);
     // window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
     console.log("mount 후 : " + this.$store.state.location);
     console.log("mount 후 dongCode : " + this.$store.state.dongCode);
@@ -292,6 +301,41 @@ export default {
           // 마커 찍기
           marker.setMap(temp);
 
+          kakao.maps.event.addListener(marker, "click", function () {
+            let flag;
+            http
+              .post("/wish/user/interest/check", {
+                userId: vueInstance.userId,
+                dongCode: vueInstance.$store.state.dongCode,
+              })
+              .then(({ data }) => {
+                console.log("data: " + data);
+                if (data === "존재합니다.") {
+                  flag = true;
+                } else {
+                  flag = false;
+                }
+                console.log("flag : " + flag);
+                if (flag == true) {
+                  alert("이미 관심지역으로 등록되어있는 지역입니다.");
+                  return;
+                }
+                console.log("마커 선택 " + vueInstance.place);
+                var result = confirm(vueInstance.place + " -> 관심 지역으로 등록하시겠습니까?");
+                console.log(result);
+                if (result) {
+                  let url = "/wish/user/interest/";
+                  let request = {
+                    userId: vueInstance.userId,
+                    dongCode: vueInstance.$store.state.dongCode,
+                  };
+                  console.log("request: " + request.userId);
+                  console.log("request: " + request.dongCode);
+                  http.post(url, request).then(({ data }) => {});
+                }
+              });
+          });
+
           // 인포윈도우로 장소에 대한 설명을 표시합니다
           var infowindow = new kakao.maps.InfoWindow({
             content:
@@ -364,8 +408,8 @@ export default {
       document.querySelector(".left-map").classList.add("col-lg-12");
       document.querySelector(".left-map").classList.add("col-xl-12");
       document.querySelector(".left-map").classList.add("col-12");
-      this.initMap();
-      this.move();
+      // this.initMap();
+      // this.move();
     },
     openSideBar() {
       console.log("open");
