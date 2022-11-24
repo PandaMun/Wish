@@ -37,30 +37,18 @@ public class InterestController {
 
 		return interestService.registerUserInterest(interestRequestDto);
 	}
-//
-//	@DeleteMapping("/")
-//	private ResponseEntity<?> delete(HttpServletRequest req, HttpServletResponse resp) {
-//		HttpSession session = req.getSession();
-//		MemberDto userinfo = (MemberDto) session.getAttribute("userinfo");
-//
-//		if (userinfo == null) {
-//			return new ResponseEntity<String>("로그인 후 이용 가능합니다.",HttpStatus.BAD_REQUEST);
-//		}
-//
-//		String userId = userinfo.getUserId();
-//		String dongCode = req.getParameter("dongCode");
-//		int cnt = 0;
-//		try {
-//			cnt = interestService.deleteUserInterest(userId, dongCode);
-//			if (cnt != 1) {
-//				return new ResponseEntity<String>("관심 지역 삭제 실패.",HttpStatus.BAD_REQUEST);
-//			}
-//		} catch (Exception e) {
-//			return new ResponseEntity<String>("관심 지역 삭제 중 에러 발생.",HttpStatus.BAD_REQUEST);
-//		}
-//
-//		return new ResponseEntity<String>("삭제가 성공적으로 되었습니다.",HttpStatus.OK);
-//	}
+
+	@DeleteMapping
+	private ResponseEntity<?> delete(@RequestBody InterestRequestDto interestRequestDto) {
+		System.out.println(interestRequestDto.toString());
+		try {
+			interestService.deleteInterest(interestRequestDto);
+		} catch (Exception e) {
+			return new ResponseEntity<String>("관심 지역 삭제 중 에러 발생.",HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity<String>("삭제가 성공적으로 되었습니다.",HttpStatus.OK);
+	}
 //
 	@GetMapping("/{dongCode}") // 지도에 띄울 동으로 나온 아파트
 	private ResponseEntity<?> detail(@PathVariable String dongCode){

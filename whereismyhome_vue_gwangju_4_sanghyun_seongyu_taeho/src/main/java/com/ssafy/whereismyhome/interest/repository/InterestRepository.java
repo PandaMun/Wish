@@ -14,4 +14,9 @@ public interface InterestRepository extends JpaRepository<Interest,Long> {
 
     @Query("select u from Interest u where u.user.Id = :userId and u.dongCode.dongCode = :dongCode")
     List<Interest> CountByUserIdAndDongCode(@Param("userId") String userId, @Param("dongCode") String dongCode);
+
+//    @Query("delete from Interest u where u.dongCode.dongCode=:dongCode and u.user.Id=:userId")
+//    void deleteByDongCode(@Param("userId") String userId, @Param("dongCode") String dongCode);
+
+
 }

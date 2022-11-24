@@ -81,4 +81,10 @@ public class InterestService{
 
     }
 
+
+    public void deleteInterest(InterestRequestDto interestRequestDto){
+        List<Interest> interests = interestRepository.CountByUserIdAndDongCode(interestRequestDto.getUserId(), interestRequestDto.getDongCode());
+        interestRepository.deleteById(interests.get(0).getInterestCnt());
+    }
+
 }
