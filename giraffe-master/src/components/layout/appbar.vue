@@ -56,21 +56,30 @@
           </v-col>
 
           <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="6">
+            <v-btn class="text-capitalize" to="/" exact exact-active-class="accent--text" text
+              >Home</v-btn
+            >
+            <v-btn class="text-capitalize" to="/map" exact exact-active-class="accent--text" text
+              >Map</v-btn
+            >
+            <v-btn class="text-capitalize" to="/notice" exact exact-active-class="accent--text" text
+              >Notice</v-btn
+            >
+            <v-btn class="text-capitalize" to="/qna" exact exact-active-class="accent--text" text
+              >QnA</v-btn
+            >
             <v-btn
-              v-for="(item, i) in barItems"
-              :key="i"
-              :to="item.to"
+              v-if="data"
               class="text-capitalize"
+              to="/favorite"
               exact
               exact-active-class="accent--text"
               text
-              >{{ item.title }}
-            </v-btn>
+              >Favorite</v-btn
+            >
           </v-col>
           <v-col v-if="$vuetify.breakpoint.mdAndUp" class="text-right">
-            <v-badge v-if="data" bordered color="error" icon="mdi-lock" overlap>{{
-              data.name
-            }}</v-badge>
+            <v-badge v-if="data" bordered color="error" icon="mdi-lock">{{ data.name }}님 </v-badge>
             <v-btn v-if="data" color="danger" to="/mypage" class="ml-3 text-capitalize">
               <v-icon left>mdi-login</v-icon>
               MyPage
