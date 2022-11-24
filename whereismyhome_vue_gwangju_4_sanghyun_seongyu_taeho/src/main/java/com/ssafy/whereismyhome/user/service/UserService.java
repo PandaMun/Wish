@@ -56,7 +56,7 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
-        return response.success("회원가입에 성공했습니다.");
+        return response.success("success");
     }
     @Transactional
     public ResponseEntity<?> login(UserRequestDto.Login login) {
