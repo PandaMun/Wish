@@ -22,7 +22,7 @@ public class ApartmentController {
 
 	private final ApartmentService apartmentService;
 
-	@GetMapping("/list")
+	@PostMapping("/list")
 	public ResponseEntity<?> getAptList(@RequestBody MapLocation mapLocation) {
 
 		List<AptInfo> list = new ArrayList<>();
@@ -33,13 +33,12 @@ public class ApartmentController {
 		}
 		return new ResponseEntity<List<AptInfo>>(list, HttpStatus.OK);
 	}
-	@GetMapping("/info")
-	public ResponseEntity<?> getAptDetailInfo(@RequestBody Map<String, String> aptCode) {
+	@GetMapping("/info/{aptCode}")
+	public ResponseEntity<?> getAptDetailInfo(@PathVariable String aptCode) {
 
 		List<AptDeal> list = new ArrayList<>();
-
 		try {
-			list = apartmentService.getAptDeal(Long.parseLong(aptCode.get("aptCode")));
+			list = apartmentService.getAptDeal(Long.parseLong(aptCode));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<List<AptDeal>>(list, HttpStatus.OK);

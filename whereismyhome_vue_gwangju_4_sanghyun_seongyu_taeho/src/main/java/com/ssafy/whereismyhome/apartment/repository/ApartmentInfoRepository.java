@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ApartmentInfoRepository extends JpaRepository<ApartmentInfo, Long> {
@@ -20,5 +21,5 @@ public interface ApartmentInfoRepository extends JpaRepository<ApartmentInfo, Lo
     @Query("select distinct u from ApartmentInfo u join fetch u.dongCode where u.apartmentName like %:apartmentName%")
     List<ApartmentInfo> findByApartmentName(@Param("apartmentName") String apartmentName);
 
-    ApartmentInfo findAllByAptCode(Long aptCode);
+    Optional<ApartmentInfo> findById(Long aptCode);
 }

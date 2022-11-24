@@ -19,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 
@@ -36,7 +38,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisTemplate redisTemplate;
-
+    @Transactional
     public ResponseEntity<?> signUp(UserRequestDto.SignUp signUp) {
         if (userRepository.existsById(signUp.getUserId())) {
             return response.fail("이미 회원가입된 아이디입니다.", HttpStatus.BAD_REQUEST);
@@ -44,7 +46,7 @@ public class UserService {
 
         User user = User.builder()
                 .Id(signUp.getUserId())
-                .username(signUp.getUsername())
+                .name(signUp.getName())
                 .address(signUp.getAddress())
                 .nickname(signUp.getNickname())
                 .phoneNumber(signUp.getPhoneNumber())
@@ -56,7 +58,7 @@ public class UserService {
 
         return response.success("회원가입에 성공했습니다.");
     }
-
+    @Transactional
     public ResponseEntity<?> login(UserRequestDto.Login login) {
 
         if (userRepository.findById(login.getUserId()).orElse(null) == null) {
@@ -66,29 +68,27 @@ public class UserService {
         // 1. Login ID/PW 를 기반으로 Authentication 객체 생성
         // 이때 authentication 는 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = login.toAuthentication();
-
         // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
         // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         UserResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
         // 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-
-        return response.success(tokenInfo, "로그인에 성공했습니다.", HttpStatus.OK);
+        return response.success(tokenInfo, "success", HttpStatus.OK);
     }
-
+    @Transactional
     public ResponseEntity<?> reissue(UserRequestDto.Reissue reissue) {
         // 1. Refresh Token 검증
         if (!jwtTokenProvider.validateToken(reissue.getRefreshToken())) {
             return response.fail("Refresh Token 정보가 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
-
         // 2. Access Token 에서 User email 을 가져옵니다.
         Authentication authentication = jwtTokenProvider.getAuthentication(reissue.getAccessToken());
+
 
         // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
         String refreshToken = (String)redisTemplate.opsForValue().get("RT:" + authentication.getName());
@@ -107,9 +107,23 @@ public class UserService {
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
 
-        return response.success(tokenInfo, "Token 정보가 갱신되었습니다.", HttpStatus.OK);
+        return response.success(tokenInfo, "success", HttpStatus.OK);
+    }
+    @Transactional
+    public void userInfo(UserRequestDto.myPage myPage){
+        // 1. Access Token 검증
+//        if (!jwtTokenProvider.validateToken(myPage.getAccessToken())) {
+//            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+//        }
+
+        // 2. Access Token 에서 User id 을 가져옵니다.
+        Authentication authentication = jwtTokenProvider.getAuthentication(myPage.getAccessToken());
+
+
+
     }
 
+    @Transactional
     public ResponseEntity<?> logout(UserRequestDto.Logout logout) {
         // 1. Access Token 검증
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
@@ -129,21 +143,36 @@ public class UserService {
         Long expiration = jwtTokenProvider.getExpiration(logout.getAccessToken());
         redisTemplate.opsForValue()
                 .set(logout.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
-
-        return response.success("로그아웃 되었습니다.");
+        log.info("logout");
+        return response.success("success");
     }
+    @Transactional
+    public void modifyPassword(UserRequestDto.Login login){
+        User user = userRepository.findById(login.getUserId()).get();
+        user.modifyPassword(login.getUserId(),passwordEncoder.encode(login.getPassword()));
+    }
+    public ResponseEntity<?> authority(UserRequestDto.Authority authority) {
+        if (!jwtTokenProvider.validateToken(authority.getAccessToken())) {
+            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+        }
 
-    public ResponseEntity<?> authority() {
-        // SecurityContext에 담겨 있는 authentication userEamil 정보
-        String userId = SecurityUtil.getCurrentUserId();
+        // 2. Access Token 에서 User email 을 가져옵니다.
+        Authentication authentication = jwtTokenProvider.getAuthentication(authority.getAccessToken());
+        return response.success("success");
+    }
+    @Transactional
+    public ResponseEntity<?> findById(String userId){
+        User user = userRepository.findById(userId).get();
+        UserResponseDto.MyPage userInfo= UserResponseDto.MyPage.builder()
+                .userId(user.getId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .address(user.getAddress())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("No authentication information."));
-
-        // add ROLE_ADMIN
-        user.getRoles().add(Authority.ROLE_ADMIN.name());
-        userRepository.save(user);
-
-        return response.success();
+        System.out.println(userInfo.toString());
+        return response.userInfo(userInfo,"success",HttpStatus.OK);
     }
 }

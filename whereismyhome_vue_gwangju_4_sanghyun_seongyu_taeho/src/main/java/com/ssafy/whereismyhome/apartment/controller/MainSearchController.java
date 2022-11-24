@@ -1,5 +1,6 @@
 package com.ssafy.whereismyhome.apartment.controller;
 
+import com.ssafy.whereismyhome.apartment.dto.AptInfo;
 import com.ssafy.whereismyhome.apartment.dto.AptNameInfo;
 import com.ssafy.whereismyhome.apartment.dto.ResponseDongDto;
 import com.ssafy.whereismyhome.apartment.entity.DongCode;
@@ -30,7 +31,6 @@ public class MainSearchController {
             return new ResponseEntity<List<AptNameInfo>>(new ArrayList<>(), HttpStatus.OK);
         }else{
             try{
-                System.out.println(aptName);
                 aptNameInfoList = mainSearchService.searchByAptName(aptName);
             }catch (Exception e){
                 return new ResponseEntity<String>("조회중 에러가 발생했습니다.", HttpStatus.BAD_REQUEST);
@@ -53,6 +53,22 @@ public class MainSearchController {
                 return new ResponseEntity<String>("조회중 에러가 발생했습니다.", HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<List<ResponseDongDto>>(dongCodeList, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/aptinfo/{dongCode}")
+    public ResponseEntity<?> searchBydongCode(@PathVariable String dongCode){
+
+        List<AptInfo> aptInfoList = new ArrayList<>();
+        if(dongCode.isEmpty()){
+            return new ResponseEntity<List<DongCode>>(new ArrayList<>(), HttpStatus.OK);
+        }else{
+            try{
+                aptInfoList = mainSearchService.searchByDongCode(dongCode);
+            }catch (Exception e){
+                return new ResponseEntity<String>("조회중 에러가 발생했습니다.", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<List<AptInfo>>(aptInfoList, HttpStatus.OK);
         }
     }
 }

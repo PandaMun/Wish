@@ -38,7 +38,7 @@ public class ApartmentInfo {
     @Column(precision = 15, scale = 12, nullable = false)
     private BigDecimal lat;
 
-    @OneToMany(mappedBy = "apartmentInfo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "apartmentInfo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ApartmentDeal> apartmentDeals;
 
     @ManyToOne

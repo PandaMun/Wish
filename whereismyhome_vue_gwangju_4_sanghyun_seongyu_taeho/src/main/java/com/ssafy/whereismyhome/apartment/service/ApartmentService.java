@@ -42,7 +42,7 @@ public class ApartmentService {
 	public List<AptDeal> getAptDeal(Long aptCode) throws Exception {
 
 		List<AptDeal> aptDealList = new ArrayList<>();
-		List<ApartmentDeal> apartmentDealList =  apartmentInfoRepository.findAllByAptCode(aptCode).getApartmentDeals();
+		List<ApartmentDeal> apartmentDealList =  apartmentInfoRepository.findById(aptCode).get().getApartmentDeals();
 		for(int i = 0; i<apartmentDealList.size(); i++){
 			aptDealList.add(new AptDeal(apartmentDealList.get(i)));
 		}

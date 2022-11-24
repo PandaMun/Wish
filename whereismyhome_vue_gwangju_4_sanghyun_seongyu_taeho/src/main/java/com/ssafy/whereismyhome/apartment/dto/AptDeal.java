@@ -9,10 +9,13 @@ public class AptDeal {
 	private String dealAmount;
 	private int dealYear;
 	private int dealMonth;
+
+	private String dealDate;
 	private int dealDay;
 	private String area;
 	private String floor;
 	private Long aptCode;
+
 
 	public AptDeal(ApartmentDeal apartmentDeal) {
 		this.id = apartmentDeal.getId();
@@ -23,5 +26,6 @@ public class AptDeal {
 		this.area = apartmentDeal.getArea();
 		this.floor = apartmentDeal.getFloor();
 		this.aptCode = apartmentDeal.getApartmentInfo().getAptCode();
+		this.dealDate = new StringBuilder().append(apartmentDeal.getDealYear()).append(".").append(apartmentDeal.getDealMonth()).append(".").append(apartmentDeal.getDealDay()).toString();
 	}
 }

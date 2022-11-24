@@ -36,7 +36,7 @@ public class User implements UserDetails {
 
     private String phoneNumber;
 
-    private String username;
+    private String name;
 
     private String nickname;
 
@@ -87,5 +87,10 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void modifyPassword(String userId, String password){
+        this.Id = userId;
+        this.password = password;
     }
 }

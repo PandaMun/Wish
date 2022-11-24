@@ -54,11 +54,16 @@ server:
 logging:
   org:
     springframework:
-      security: DEBUG
+      security:
+        web:
+          FilterChainProxy=DEBUG
+  hibernate:
+    type: trace
   level:
     root: info
     com:
       ssafy: debug
+
 jwt:
   secret: coffeeismaximcoffeeismaximcoffeeismaximcoffeeismaxim
   live:

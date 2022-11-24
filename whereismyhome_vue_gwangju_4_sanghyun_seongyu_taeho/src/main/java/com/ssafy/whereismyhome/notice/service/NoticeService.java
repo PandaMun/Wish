@@ -5,7 +5,6 @@ import com.ssafy.whereismyhome.notice.entity.Notice;
 import com.ssafy.whereismyhome.notice.repository.NoticeRepository;
 import com.ssafy.whereismyhome.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

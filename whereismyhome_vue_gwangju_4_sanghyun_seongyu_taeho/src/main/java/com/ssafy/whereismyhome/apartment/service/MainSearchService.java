@@ -1,5 +1,6 @@
 package com.ssafy.whereismyhome.apartment.service;
 
+import com.ssafy.whereismyhome.apartment.dto.AptInfo;
 import com.ssafy.whereismyhome.apartment.dto.AptNameInfo;
 import com.ssafy.whereismyhome.apartment.dto.ResponseDongDto;
 import com.ssafy.whereismyhome.apartment.entity.ApartmentInfo;
@@ -40,4 +41,17 @@ public class MainSearchService{
         }
         return responseDongDtoList;
     }
+
+    @Transactional
+    public List<AptInfo> searchByDongCode(String dongCode) throws SQLException {
+        List<AptInfo> aptInfoList= new ArrayList<>();
+        DongCode dong =  dongCodeRepository.findByDongCode(dongCode);
+        if(dong == null) {
+            return aptInfoList;
+        }else{
+        for(int i = 0; i< dong.getApartmentInfos().size(); i++ ){
+            aptInfoList.add(new AptInfo(dong.getApartmentInfos().get(i)));
+        }
+        return aptInfoList;
+    }}
 }

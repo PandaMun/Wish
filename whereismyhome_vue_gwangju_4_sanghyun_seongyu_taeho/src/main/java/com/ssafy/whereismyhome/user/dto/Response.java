@@ -19,9 +19,28 @@ public class Response {
 
         private int state;
         private String result;
-        private String massage;
+        private String message;
         private Object data;
         private Object error;
+    }
+
+
+    /**
+     *
+     * @param data
+     * @param msg
+     * @param status
+     * @return
+     */
+    public ResponseEntity<?> userInfo(Object data, String msg, HttpStatus status) {
+        Body body = Body.builder()
+                .state(status.value())
+                .data(data)
+                .result("success")
+                .message(msg)
+                .error(Collections.emptyList())
+                .build();
+        return ResponseEntity.ok(body);
     }
 
     public ResponseEntity<?> success(Object data, String msg, HttpStatus status) {
@@ -29,7 +48,7 @@ public class Response {
                 .state(status.value())
                 .data(data)
                 .result("success")
-                .massage(msg)
+                .message(msg)
                 .error(Collections.emptyList())
                 .build();
         return ResponseEntity.ok(body);
@@ -96,7 +115,7 @@ public class Response {
                 .state(status.value())
                 .data(data)
                 .result("fail")
-                .massage(msg)
+                .message(msg)
                 .error(Collections.emptyList())
                 .build();
         return ResponseEntity.ok(body);
@@ -127,7 +146,7 @@ public class Response {
                 .state(HttpStatus.BAD_REQUEST.value())
                 .data(Collections.emptyList())
                 .result("fail")
-                .massage("")
+                .message("")
                 .error(errors)
                 .build();
         return ResponseEntity.ok(body);

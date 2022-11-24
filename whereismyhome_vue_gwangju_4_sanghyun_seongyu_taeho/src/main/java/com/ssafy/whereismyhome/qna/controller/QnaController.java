@@ -59,7 +59,6 @@ public class QnaController {
 
     @PatchMapping("/inquiries/{id}") //게시물 수정
     public ResponseEntity<?> patchInquiry(@PathVariable String id, @RequestBody InquiryDto inquiryDto){
-        System.out.println("update");
         try{
             qnaService.patchInquiry(inquiryDto);
         }catch (Exception e){

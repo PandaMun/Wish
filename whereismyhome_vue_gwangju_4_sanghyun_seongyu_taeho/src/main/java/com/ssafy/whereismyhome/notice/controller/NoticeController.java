@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/wish/notice")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class NoticeController {
 
     private final NoticeService noticeService;
