@@ -332,6 +332,7 @@ export default {
                   console.log("request: " + request.userId);
                   console.log("request: " + request.dongCode);
                   http.post(url, request).then(({ data }) => {});
+                  alert("등록이 완료되었습니다.");
                 }
               });
           });
