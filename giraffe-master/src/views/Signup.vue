@@ -251,7 +251,7 @@ export default {
         console.log(data);
         if (data.message == "success") {
           alert("회원가입 완료 되었습니다. 로그인해주세요");
-          this.$router.push("/login");
+          this.$router.push("/");
         }
       });
     },
