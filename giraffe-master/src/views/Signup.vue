@@ -240,18 +240,18 @@ export default {
       let request = {
         userId: this.userId,
         password: this.userPassword,
-        username: this.userName,
+        name: this.userName,
         nickname: this.nickName,
         email: this.email,
         phoneNumber: this.phoneNumber,
         address: this.address,
       };
-      console.log(request);
       http.post("/wish/sign-up", request).then(({ data }) => {
-        console.log(data);
         if (data.message == "success") {
           alert("회원가입 완료 되었습니다. 로그인해주세요");
-          this.$router.push("/");
+          this.$router.push("/login");
+        } else {
+          alert(data.message);
         }
       });
     },
