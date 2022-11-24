@@ -10,7 +10,7 @@
           <!-- {{ move() }} -->
         </div>
       </v-col>
-      <v-col class="right-info overflow-auto pa-5" style="height: 94vh">
+      <v-col class="right-info overflow-auto pa-5" style="height: 93vh; display: none">
         <div v-if="place == null"></div>
         <div v-if="place != null">
           <div>
@@ -55,6 +55,7 @@
 
 <script>
 import http from "@/util/http-common";
+import jwtDecode from "jwt-decode";
 export default {
   data() {
     return {
@@ -76,10 +77,18 @@ export default {
       dongCode: "",
       aptList: [],
       positions: [],
+
+      userId: "",
     };
   },
   watch: {},
   mounted() {
+    if (sessionStorage.getItem("accessToken") != null) {
+      console.log("asdfasdfasdasdfasdf");
+      this.userId = jwtDecode(sessionStorage.getItem("accessToken")).sub;
+      console.log(jwtDecode(sessionStorage.getItem("accessToken")));
+    }
+    console.log("created userId : " + this.userId);
     // window.kakao && window.kakao.maps ? this.initMap() : this.addKakaoMapScript();
     console.log("mount 후 : " + this.$store.state.location);
     console.log("mount 후 dongCode : " + this.$store.state.dongCode);
@@ -197,7 +206,7 @@ export default {
           let url = "/wish/apartments/list";
           http.post(url, ML).then(({ data }) => {
             console.log("맵 옮기고 난 아파트 : " + data);
-            this.positions = [];
+            vueInstance.positions = [];
             data.map((row) => {
               let tmp = {
                 title: row.apartmentName,
@@ -207,13 +216,13 @@ export default {
                 aptCode: row.aptCode,
               };
               console.log("tmp : " + tmp.title + " " + tmp.latlng + " " + tmp.aptCode);
-              this.positions.push(tmp);
+              vueInstance.positions.push(tmp);
             });
 
             var imageSrc =
               "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
-            for (var i = 0; i < this.positions.length; i++) {
-              console.log("여긴?? " + this.positions[i].title);
+            for (var i = 0; i < vueInstance.positions.length; i++) {
+              console.log("여긴?? " + vueInstance.positions[i].title);
               // 마커 이미지의 이미지 크기 입니다
               var imageSize = new kakao.maps.Size(24, 35);
 
@@ -222,12 +231,12 @@ export default {
               console.log(this);
               // 마커를 생성합니다
               var marker = new kakao.maps.Marker({
-                map: this.map, // 마커를 표시할 지도
-                position: this.positions[i].latlng, // 마커를 표시할 위치
-                title: this.positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                map: vueInstance.map, // 마커를 표시할 지도
+                position: vueInstance.positions[i].latlng, // 마커를 표시할 위치
+                title: vueInstance.positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
                 image: markerImage, // 마커 이미지
                 clickable: true, // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
-                aptCode: this.positions[i].aptCode,
+                aptCode: vueInstance.positions[i].aptCode,
               });
               console.log("this점맵 : " + vueInstance.map);
               marker.setMap(vueInstance.map);
@@ -291,6 +300,41 @@ export default {
 
           // 마커 찍기
           marker.setMap(temp);
+
+          kakao.maps.event.addListener(marker, "click", function () {
+            let flag;
+            http
+              .post("/wish/user/interest/check", {
+                userId: vueInstance.userId,
+                dongCode: vueInstance.$store.state.dongCode,
+              })
+              .then(({ data }) => {
+                console.log("data: " + data);
+                if (data === "존재합니다.") {
+                  flag = true;
+                } else {
+                  flag = false;
+                }
+                console.log("flag : " + flag);
+                if (flag == true) {
+                  alert("이미 관심지역으로 등록되어있는 지역입니다.");
+                  return;
+                }
+                console.log("마커 선택 " + vueInstance.place);
+                var result = confirm(vueInstance.place + " -> 관심 지역으로 등록하시겠습니까?");
+                console.log(result);
+                if (result) {
+                  let url = "/wish/user/interest/";
+                  let request = {
+                    userId: vueInstance.userId,
+                    dongCode: vueInstance.$store.state.dongCode,
+                  };
+                  console.log("request: " + request.userId);
+                  console.log("request: " + request.dongCode);
+                  http.post(url, request).then(({ data }) => {});
+                }
+              });
+          });
 
           // 인포윈도우로 장소에 대한 설명을 표시합니다
           var infowindow = new kakao.maps.InfoWindow({
@@ -364,8 +408,8 @@ export default {
       document.querySelector(".left-map").classList.add("col-lg-12");
       document.querySelector(".left-map").classList.add("col-xl-12");
       document.querySelector(".left-map").classList.add("col-12");
-      this.initMap();
-      this.move();
+      // this.initMap();
+      // this.move();
     },
     openSideBar() {
       console.log("open");

@@ -1,82 +1,71 @@
 <template>
   <div>
-    <v-row>
-      <v-col cols="12" lg="12" xl="8">
-        <div>
-          <div>
-            <div>
-              <h2 class="text-h4 font-weight-bold">ANIMAL</h2>
-
-              <h4 class="text-h6">Some category description goes here</h4>
-            </div>
-
-            <v-divider class="my-4"></v-divider>
-
-            <v-row>
-              <v-col cols="12" md="6" lg="4" v-for="i in 18" :key="i">
-                <v-hover v-slot:default="{ hover }" open-delay="50" close-delay="50">
-                  <div>
-                    <v-card
-                      flat
-                      :color="hover ? 'white' : 'transparent'"
-                      :elevation="hover ? 12 : 0"
-                      hover
-                      to="/detail"
-                    >
-                      <v-img
-                        src="https://cdn.pixabay.com/photo/2016/11/14/04/45/elephant-1822636_1280.jpg"
-                        :aspect-ratio="16 / 9"
-                        gradient="to top, rgba(25,32,72,.4), rgba(25,32,72,.0)"
-                        height="200px"
-                        class="elevation-2"
-                        style="border-radius: 16px"
-                      >
-                        <v-card-text>
-                          <v-btn color="accent">ANIMAL</v-btn>
-                        </v-card-text>
-                      </v-img>
-
-                      <v-card-text>
-                        <div class="text-h5 font-weight-bold primary--text">
-                          How to write an awesome blog post in 5 steps
-                        </div>
-
-                        <div class="text-body-1 py-4">
-                          Ultrices sagittis orci a scelerisque. Massa placerat duis ultricies lacus
-                          sed turpis
-                        </div>
-
-                        <div class="d-flex align-center">
-                          <v-avatar color="accent" size="36">
-                            <v-icon dark>mdi-feather</v-icon>
-                          </v-avatar>
-
-                          <div class="pl-2">Yan Lee · 22 July 2019</div>
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </div>
-                </v-hover>
-              </v-col>
-            </v-row>
-          </div>
-        </div>
-      </v-col>
-
-      <v-col>
-        <div>
-          <siderbar />
-        </div>
-      </v-col>
-    </v-row>
+    <input type="text" v-model="dongCode" id="dongCode" />
+    <button class="button" @click="[write(), moveToMap()]">검색</button>
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+import http from "@/util/http-common";
+import jwtDecode from "jwt-decode";
 export default {
   name: "Favorite",
   components: {
     siderbar: () => import("@/components/details/favorite"),
+  },
+  data() {
+    return {
+      dongCode: "",
+      value: "",
+      userId: "",
+      favorites: [],
+    };
+  },
+  methods: {
+    moveToMap() {
+      this.value = this.$router.push({ path: "/map" });
+    },
+    write: function () {
+      console.log("동코드 : " + document.getElementById("dongCode").value);
+      this.dongCode = document.getElementById("dongCode").value;
+      this.value = this.$refs.getValue.value;
+      console.log("가기 전 : " + this.$refs.getValue.value);
+      this.showLocation(this.value);
+      console.log("가기 전 dongCode : " + this.dongCode);
+      this.storeDongcode(this.dongCode);
+    },
+    ...mapMutations({
+      showLocation: "SHOW_LOCATION",
+      storeDongcode: "STORE_DONGCODE",
+    }),
+    getFavorites() {
+      let url = "/wish/user/interest/info/" + this.userId;
+      http.get(url).then(({ data }) => {
+        console.log(data);
+        this.favorites = data;
+      });
+    },
+    deleteFavorite(i) {
+      let url = "wish/user/interest/" + this.favorites[i].id;
+      http.delete(url).then(({ data }) => {
+        console.log(data);
+        alert("성공적으로 삭제되었습니다.");
+        // this.makeList();
+      });
+    },
+  },
+  created() {
+    if (sessionStorage.getItem("accessToken") != null) {
+      console.log("asdfasdfasdasdfasdf");
+      this.userId = jwtDecode(sessionStorage.getItem("accessToken")).sub;
+      console.log(jwtDecode(sessionStorage.getItem("accessToken")).sub);
+    }
+    this.getFavorites();
+    // let url = "/wish/user/interest/info/" + this.userId;
+    // http.get(url).then(({ data }) => {
+    //   console.log(data);
+    // });
   },
 };
 </script>
