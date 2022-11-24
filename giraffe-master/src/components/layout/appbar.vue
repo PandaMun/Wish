@@ -176,6 +176,7 @@ export default {
       sessionStorage.removeItem("accessToken"); //저장된 토큰 없애기
       sessionStorage.removeItem("refreshToken"); //저장된 토큰 없애기
       console.log(sessionStorage);
+      alert("로그아웃 되었습니다.");
       if (this.$route.path != "/") this.$router.push("/");
     },
   },
