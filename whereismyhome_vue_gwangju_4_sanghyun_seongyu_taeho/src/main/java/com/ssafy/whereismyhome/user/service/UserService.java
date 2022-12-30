@@ -10,6 +10,8 @@ import com.ssafy.whereismyhome.user.entity.User;
 import com.ssafy.whereismyhome.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserService {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final UserRepository userRepository;
     private final Response response;
     private final PasswordEncoder passwordEncoder;
@@ -41,6 +45,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<?> signUp(UserRequestDto.SignUp signUp) {
         if (userRepository.existsById(signUp.getUserId())) {
+             logger.error("이미 회원 가입된 아이디 입니다.");
             return response.fail("이미 회원가입된 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -56,6 +61,7 @@ public class UserService {
                 .build();
         userRepository.save(user);
 
+        logger.info("signup success");
         return response.success("success");
     }
     @Transactional
@@ -78,6 +84,7 @@ public class UserService {
         // 4. RefreshToken Redis 저장 (expirationTime 설정을 통해 자동 삭제 처리)
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenInfo.getRefreshToken(), tokenInfo.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+        logger.info("로그인 성공");
         return response.success(tokenInfo, "success", HttpStatus.OK);
     }
     @Transactional
