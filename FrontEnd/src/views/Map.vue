@@ -102,9 +102,9 @@ export default {
       this.getAptListByDong();
       const script = document.createElement("script");
       /* global kakao */
-      // script.src = "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
+      // script.src = "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey= ";
       script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639&libraries=services";
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=  &libraries=services";
       script.onload = () => kakao.maps.load(this.initMap);
 
       document.head.appendChild(script);
@@ -156,7 +156,7 @@ export default {
       /* global kakao */
       script.onload = () => kakao.maps.load(this.initMap);
       script.src =
-        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=4883376f4eefddd799ae8fdefeedd639";
+        "http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey= ";
       document.head.appendChild(script);
     },
     initMap() {
